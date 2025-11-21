@@ -19,19 +19,16 @@ async function bootstrap() {
         }),
     );
 
-    // Enable CORS
     app.enableCors({
-        origin: (configService.get<string>('CORS_ORIGIN') || '*').split(','),
-        methods: (
-            configService.get<string>('CORS_METHODS') ||
-            'GET,HEAD,PUT,PATCH,POST,DELETE'
-        ).split(','),
-        credentials: configService.get<string>('CORS_CREDENTIALS') === 'false',
+        origin: configService.get<string>('CORS_ORIGIN'),
+        methods: configService.get<string>('CORS_METHODS'),
+        credentials: configService.get<string>('CORS_CREDENTIALS'),
+        allowedHeaders: 'Content-Type,Authorization,Accept',
     });
 
     // Set global API prefix
-    const apiPrefix = configService.get<string>('API_PREFIX') || 'api';
-    const apiVersion = configService.get<string>('API_VERSION') || 'v1';
+    const apiPrefix = configService.get<string>('API_PREFIX');
+    const apiVersion = configService.get<string>('API_VERSION');
     app.setGlobalPrefix(`${apiPrefix}/${apiVersion}`);
 
     // Setup Swagger (only for development and homologation)
@@ -40,15 +37,9 @@ async function bootstrap() {
 
     if (isSwaggerEnabled && nodeEnv !== 'production') {
         const config = new DocumentBuilder()
-            .setTitle(
-                configService.get<string>('SWAGGER_TITLE') ||
-                    'EACE Backend Dashboard API',
-            )
-            .setDescription(
-                configService.get<string>('SWAGGER_DESCRIPTION') ||
-                    'API documentation for EACE Backend Dashboard',
-            )
-            .setVersion(configService.get<string>('SWAGGER_VERSION') || '1.0.0')
+            .setTitle(configService.get<string>('SWAGGER_TITLE')!)
+            .setDescription(configService.get<string>('SWAGGER_DESCRIPTION')!)
+            .setVersion(configService.get<string>('SWAGGER_VERSION')!)
             .addBearerAuth(
                 {
                     type: 'http',
@@ -67,8 +58,8 @@ async function bootstrap() {
         console.log(`📚 Swagger documentation available at: /${swaggerPath}`);
     }
 
-    const port = configService.get<number>('PORT') || 3000;
-    const host = configService.get<string>('HOST') || 'localhost';
+    const port = configService.get<number>('PORT')!;
+    const host = configService.get<string>('HOST')!;
 
     await app.listen(port, host);
 
