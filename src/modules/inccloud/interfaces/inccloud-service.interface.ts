@@ -5,5 +5,7 @@ import {
 
 export interface IncCloudServiceInterface {
     getShops(): Promise<IncCloudShopResponse>;
-    getDeviceOperations(devSN: string[]): Promise<IncCloudDeviceOperationResponse>;
+    getDeviceOperations(
+        devSN: string[],
+    ): Promise<IncCloudDeviceOperationResponse>;
 }

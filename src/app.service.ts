@@ -16,7 +16,8 @@ export class AppService {
         return {
             message: 'EACE Backend Dashboard is running!',
             timestamp: new Date().toISOString(),
-            environment: this.configService.get<string>('NODE_ENV') || 'development',
+            environment:
+                this.configService.get<string>('NODE_ENV') || 'development',
             version: this.configService.get<string>('APP_VERSION') || '0.0.1',
         };
     }

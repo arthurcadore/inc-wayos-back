@@ -41,11 +41,16 @@ describe('AppService', () => {
             const result = service.getHealthCheck();
 
             // Assert
-            expect(result).toHaveProperty('message', 'EACE Backend Dashboard is running!');
+            expect(result).toHaveProperty(
+                'message',
+                'EACE Backend Dashboard is running!',
+            );
             expect(result).toHaveProperty('timestamp');
             expect(result).toHaveProperty('environment', 'development');
             expect(result).toHaveProperty('version', '0.0.1');
-            expect(result.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+            expect(result.timestamp).toMatch(
+                /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
+            );
 
             expect(configService.get).toHaveBeenCalledWith('NODE_ENV');
             expect(configService.get).toHaveBeenCalledWith('APP_VERSION');
@@ -70,7 +75,9 @@ describe('AppService', () => {
             // Assert
             expect(result).toEqual({
                 message: 'EACE Backend Dashboard is running!',
-                timestamp: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
+                timestamp: expect.stringMatching(
+                    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
+                ),
                 environment: 'production',
                 version: '1.2.3',
             });
@@ -94,8 +101,12 @@ describe('AppService', () => {
             expect(result1.timestamp).toBeDefined();
             expect(result2.timestamp).toBeDefined();
             // The timestamps should be valid ISO strings
-            expect(new Date(result1.timestamp).toISOString()).toBe(result1.timestamp);
-            expect(new Date(result2.timestamp).toISOString()).toBe(result2.timestamp);
+            expect(new Date(result1.timestamp).toISOString()).toBe(
+                result1.timestamp,
+            );
+            expect(new Date(result2.timestamp).toISOString()).toBe(
+                result2.timestamp,
+            );
         });
 
         it('should handle different NODE_ENV values', () => {

@@ -22,7 +22,10 @@ async function bootstrap() {
     // Enable CORS
     app.enableCors({
         origin: (configService.get<string>('CORS_ORIGIN') || '*').split(','),
-        methods: (configService.get<string>('CORS_METHODS') || 'GET,HEAD,PUT,PATCH,POST,DELETE').split(','),
+        methods: (
+            configService.get<string>('CORS_METHODS') ||
+            'GET,HEAD,PUT,PATCH,POST,DELETE'
+        ).split(','),
         credentials: configService.get<string>('CORS_CREDENTIALS') === 'false',
     });
 
@@ -37,9 +40,24 @@ async function bootstrap() {
 
     if (isSwaggerEnabled && nodeEnv !== 'production') {
         const config = new DocumentBuilder()
-            .setTitle(configService.get<string>('SWAGGER_TITLE') || 'EACE Backend Dashboard API')
-            .setDescription(configService.get<string>('SWAGGER_DESCRIPTION') || 'API documentation for EACE Backend Dashboard')
+            .setTitle(
+                configService.get<string>('SWAGGER_TITLE') ||
+                    'EACE Backend Dashboard API',
+            )
+            .setDescription(
+                configService.get<string>('SWAGGER_DESCRIPTION') ||
+                    'API documentation for EACE Backend Dashboard',
+            )
             .setVersion(configService.get<string>('SWAGGER_VERSION') || '1.0.0')
+            .addBearerAuth(
+                {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                    description: 'Enter JWT token',
+                },
+                'access-token',
+            )
             .build();
 
         const document = SwaggerModule.createDocument(app, config);
@@ -54,7 +72,9 @@ async function bootstrap() {
 
     await app.listen(port, host);
 
-    console.log(`🚀 Application is running on: http://${host}:${port}/${apiPrefix}/${apiVersion}`);
+    console.log(
+        `🚀 Application is running on: http://${host}:${port}/${apiPrefix}/${apiVersion}`,
+    );
     console.log(`🌍 Environment: ${nodeEnv}`);
 }
 

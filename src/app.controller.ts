@@ -1,5 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiOkResponse } from '@nestjs/swagger';
+import {
+    ApiTags,
+    ApiOperation,
+    ApiResponse,
+    ApiOkResponse,
+} from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { WayosService } from './modules/wayos/services/wayos.service';
 
@@ -21,7 +26,8 @@ export class AppController {
     @Get()
     @ApiOperation({
         summary: 'Health check endpoint',
-        description: 'Returns a simple health check message with system information',
+        description:
+            'Returns a simple health check message with system information',
     })
     @ApiOkResponse({
         description: 'Application is healthy and running',

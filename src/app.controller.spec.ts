@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { WayosService } from './modules/wayos/services/wayos.service';
 
 describe('AppController', () => {
     let appController: AppController;
@@ -9,6 +10,10 @@ describe('AppController', () => {
 
     const mockConfigService = {
         get: jest.fn(),
+    };
+
+    const mockWayosService = {
+        getDeviceInfo: jest.fn(),
     };
 
     beforeEach(async () => {
@@ -19,6 +24,10 @@ describe('AppController', () => {
                 {
                     provide: ConfigService,
                     useValue: mockConfigService,
+                },
+                {
+                    provide: WayosService,
+                    useValue: mockWayosService,
                 },
             ],
         }).compile();
@@ -44,7 +53,9 @@ describe('AppController', () => {
                 version: '0.0.1',
             };
 
-            jest.spyOn(appService, 'getHealthCheck').mockReturnValue(mockHealthCheck);
+            jest.spyOn(appService, 'getHealthCheck').mockReturnValue(
+                mockHealthCheck,
+            );
 
             // Act
             const result = appController.getHealthCheck();
