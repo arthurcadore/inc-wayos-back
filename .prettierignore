@@ -1,0 +1,50 @@
+# Ignorar arquivos que não precisam de formatação
+dist/
+node_modules/
+coverage/
+*.log
+.env*
+!.env.example
+
+# Build outputs
+build/
+out/
+
+# Dependency directories
+node_modules/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+.nyc_output/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# dotenv environment variables file
+.env*
+!.env.example
+
+# Generated files
+*.tsbuildinfo
