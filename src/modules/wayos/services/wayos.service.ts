@@ -6,7 +6,7 @@ import { AxiosError } from 'axios';
 import { WayosUserSceneResponse } from '../dto/wayos-response.dto';
 import { WayosServiceInterface } from '../interfaces/wayos-service.interface';
 import { defer } from 'rxjs';
-import { WayosBaseService } from './wayos-signature-generator.service';
+import { WayosBaseService } from './wayos-base.service';
 
 @Injectable()
 export class WayosService
