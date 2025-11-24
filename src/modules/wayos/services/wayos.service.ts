@@ -1,39 +1,45 @@
-import { Injectable, HttpException, HttpStatus, Inject } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom, catchError } from 'rxjs';
 import { AxiosError } from 'axios';
 import { WayosUserSceneResponse } from '../dto/wayos-response.dto';
 import { WayosServiceInterface } from '../interfaces/wayos-service.interface';
-import { WayosSignatureService } from './wayos-signature-generator.service';
-import { WAYOS_CONSTANTS } from '../wayos.constants';
 import { defer } from 'rxjs';
+import { WayosBaseService } from './wayos-signature-generator.service';
 
 @Injectable()
-export class WayosService implements WayosServiceInterface {
+export class WayosService
+    extends WayosBaseService
+    implements WayosServiceInterface
+{
     private readonly baseUrl: string;
-    private readonly appId: string;
 
     constructor(
         private readonly httpService: HttpService,
         private readonly configService: ConfigService,
-        @Inject(WAYOS_CONSTANTS.WAYOS_SIGNATURE_SERVICE)
-        private readonly service: WayosSignatureService,
     ) {
+        super();
         this.baseUrl = this.configService.get<string>('WAYOS_BASE_URL')!;
-        this.appId = this.configService.get<string>('WAYOS_ACCESS_KEY_ID')!;
     }
 
     async getDeviceInfo(sn: string): Promise<WayosUserSceneResponse> {
         const response = await firstValueFrom(
             defer(() => {
-                const timestamp = new Date().getTime().toString();
                 const body = {
-                    requestId: this.service.generateRequestId(),
+                    request_id: this.generateRequestId(),
                     sn,
+                    obj: {
+                        foo: 'bar',
+                        booleamValue: true,
+                        numberValue: 12345,
+                    },
+                    array: ['one', 'two', 3, false],
                 };
-                const signature = this.service.buildSignature(timestamp, body);
+                const timestamp = Math.floor(new Date().getTime() / 1000);
+                const signature = this.buildSignature(timestamp, body);
                 const headers = {
+                    'Content-Type': 'application/json',
                     'X-App-Id': this.appId,
                     'X-Timestamp': timestamp,
                     'X-Signature': signature,

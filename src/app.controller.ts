@@ -7,7 +7,7 @@ import {
 } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { WAYOS_CONSTANTS } from './modules/wayos/wayos.constants';
-import { WayosService } from './modules/wayos/services/wayos.service';
+import * as wayosServiceInterface from './modules/wayos/interfaces/wayos-service.interface';
 
 interface HealthCheckResponse {
     message: string;
@@ -22,7 +22,7 @@ export class AppController {
     constructor(
         private readonly appService: AppService,
         @Inject(WAYOS_CONSTANTS.WAYOS_SERVICE)
-        private readonly wayosService: WayosService,
+        private readonly wayosService: wayosServiceInterface.WayosServiceInterface,
     ) {}
 
     @Get()

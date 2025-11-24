@@ -1,6 +1,6 @@
-export interface WayosSignatureServiceInterface {
+export interface WayosBaseServiceInterface {
     buildSignature(
-        timestamp: string,
+        timestamp: number,
         bodyParams: Record<string, unknown>,
     ): string;
     generateRequestId(): string;
