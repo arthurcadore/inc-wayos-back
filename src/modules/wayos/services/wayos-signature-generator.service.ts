@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
-import { IWayosSignatureService } from '../interfaces/wayos-signature-generator.service.interface';
+import { WayosSignatureServiceInterface } from '../interfaces/wayos-signature-generator.service.interface';
 
 @Injectable()
-export class WayosSignatureService implements IWayosSignatureService {
+export class WayosSignatureService implements WayosSignatureServiceInterface {
     constructor(
         private readonly appId: string,
         private readonly secretKey: string,

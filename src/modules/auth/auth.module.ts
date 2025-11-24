@@ -14,8 +14,7 @@ import type { StringValue } from 'ms';
         JwtModule.registerAsync({
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => {
-                const expiresIn =
-                    configService.get<string>('JWT_EXPIRES_IN') || '24h';
+                const expiresIn = configService.get<string>('JWT_EXPIRES_IN');
                 return {
                     secret: configService.get<string>('JWT_SECRET')!,
                     signOptions: {

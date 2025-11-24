@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Inject } from '@nestjs/common';
 import {
     ApiTags,
     ApiOperation,
@@ -6,6 +6,7 @@ import {
     ApiOkResponse,
 } from '@nestjs/swagger';
 import { AppService } from './app.service';
+import { WAYOS_CONSTANTS } from './modules/wayos/wayos.constants';
 import { WayosService } from './modules/wayos/services/wayos.service';
 
 interface HealthCheckResponse {
@@ -20,6 +21,7 @@ interface HealthCheckResponse {
 export class AppController {
     constructor(
         private readonly appService: AppService,
+        @Inject(WAYOS_CONSTANTS.WAYOS_SERVICE)
         private readonly wayosService: WayosService,
     ) {}
 

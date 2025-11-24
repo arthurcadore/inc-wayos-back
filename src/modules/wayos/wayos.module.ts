@@ -12,17 +12,19 @@ import { WAYOS_CONSTANTS } from './wayos.constants';
         }),
     ],
     providers: [
+        { provide: WAYOS_CONSTANTS.WAYOS_SERVICE, useClass: WayosService },
         {
             provide: WAYOS_CONSTANTS.WAYOS_SIGNATURE_SERVICE,
-            useFactory(): WayosSignatureService {
-                return new WayosSignatureService(
-                    process.env.WAYOS_ACCESS_KEY_ID!,
-                    process.env.WAYOS_ACCESS_KEY_SECRET!,
-                );
-            },
+            useFactory: () =>
+                new WayosSignatureService(
+                    process.env.WAYOS_APP_ID!,
+                    process.env.WAYOS_SECRET_KEY!,
+                ),
         },
-        WayosService,
     ],
-    exports: [WAYOS_CONSTANTS.WAYOS_SIGNATURE_SERVICE, WayosService],
+    exports: [
+        WAYOS_CONSTANTS.WAYOS_SERVICE,
+        WAYOS_CONSTANTS.WAYOS_SIGNATURE_SERVICE,
+    ],
 })
 export class WayosModule {}
