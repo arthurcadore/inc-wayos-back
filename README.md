@@ -38,7 +38,7 @@
 ```bash
 # Clone o repositório
 git clone <repository-url>
-cd inc-wayos-dash
+cd inc-wayos-back
 
 # Instale as dependências
 npm install
@@ -347,7 +347,7 @@ LOG_LEVEL=error                 # Apenas erros em PROD
 ## 📂 Estrutura do Projeto
 
 ```
-inc-wayos-dash/
+inc-wayos-back/
 ├── 📁 src/
 │   ├── 📁 config/
 │   │   ├── environment.config.ts      # Validação de env vars
