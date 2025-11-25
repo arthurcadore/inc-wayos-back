@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom, catchError } from 'rxjs';
 import { AxiosError } from 'axios';
-import { WayosUserSceneResponse } from '../dto/wayos-response.dto';
+import { WayosGetDeviceInfoResponse } from '../dto/wayos-response.dto';
 import { WayosServiceInterface } from '../interfaces/wayos-service.interface';
 import { defer } from 'rxjs';
 import { WayosBaseService } from './wayos-base.service';
@@ -23,20 +23,14 @@ export class WayosService
         this.baseUrl = this.configService.get<string>('WAYOS_BASE_URL')!;
     }
 
-    async getDeviceInfo(sn: string): Promise<WayosUserSceneResponse> {
+    async getDeviceInfo(sn: string): Promise<WayosGetDeviceInfoResponse> {
         const response = await firstValueFrom(
             defer(() => {
                 const body = {
                     request_id: this.generateRequestId(),
                     sn,
-                    obj: {
-                        foo: 'bar',
-                        booleamValue: true,
-                        numberValue: 12345,
-                    },
-                    array: ['one', 'two', 3, false],
                 };
-                const timestamp = Math.floor(new Date().getTime() / 1000);
+                const timestamp = this.getTimestamp();
                 const signature = this.buildSignature(timestamp, body);
                 const headers = {
                     'Content-Type': 'application/json',
@@ -45,7 +39,7 @@ export class WayosService
                     'X-Signature': signature,
                 };
 
-                return this.httpService.post<WayosUserSceneResponse>(
+                return this.httpService.post<WayosGetDeviceInfoResponse>(
                     `${this.baseUrl}/open-api/v1/device/info`,
                     body,
                     { headers },

@@ -1,5 +1,5 @@
-import { WayosUserSceneResponse } from '../dto/wayos-response.dto';
+import { WayosGetDeviceInfoResponse } from '../dto/wayos-response.dto';
 
 export interface WayosServiceInterface {
-    getDeviceInfo(sn: string): Promise<WayosUserSceneResponse>;
+    getDeviceInfo(sn: string): Promise<WayosGetDeviceInfoResponse>;
 }

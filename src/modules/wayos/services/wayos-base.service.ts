@@ -4,6 +4,10 @@ export abstract class WayosBaseService {
     protected readonly appId: string = process.env.WAYOS_ACCESS_KEY_ID!;
     protected readonly secretKey: string = process.env.WAYOS_ACCESS_KEY_SECRET!;
 
+    public getTimestamp(): number {
+        return Math.floor(new Date().getTime() / 1000);
+    }
+
     public buildSignature(
         timestamp: number,
         bodyParams: Record<string, unknown>,
@@ -53,7 +57,6 @@ export abstract class WayosBaseService {
         const timestampStr = `${now.getFullYear()}${this.pad(now.getMonth() + 1)}${this.pad(now.getDate())}${this.pad(now.getHours())}${this.pad(now.getMinutes())}${this.pad(now.getSeconds())}`;
         const milliseconds = now.getMilliseconds().toString().padStart(3, '0');
         const randomDigits = Math.floor(Math.random() * 900000) + 1000;
-
         return `${timestampStr}${milliseconds}${randomDigits}`;
     }
 }
