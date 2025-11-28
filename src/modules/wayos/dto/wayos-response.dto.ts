@@ -1,3 +1,5 @@
+// Wayos Device Info DTOs
+
 export interface WayosGetDeviceInfo {
     login_at: string;
     logout_at: string;
@@ -19,5 +21,35 @@ export interface WayosGetDeviceInfo {
 export interface WayosGetDeviceInfoResponse {
     code: number;
     msg: string;
-    data: WayosGetDeviceInfo[];
+    data: WayosGetDeviceInfo;
+}
+
+// User Scene List DTOs
+
+export interface WayosUserScene {
+    id: number;
+    sn: string;
+    name: string;
+}
+
+export interface WayosGetUserSceneListItem {
+    id: number;
+    create_at: string;
+    update_at: string;
+    expire_at: string;
+    scene: WayosUserScene;
+    scene_id: number;
+    group_id: number;
+    mode: number;
+}
+
+export interface WayosGetUserSceneData {
+    total: number;
+    list: WayosGetUserSceneListItem[];
+}
+
+export interface WayosGetUserSceneListResponse {
+    code: number;
+    msg: string;
+    data: WayosGetUserSceneData;
 }

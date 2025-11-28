@@ -18,15 +18,15 @@ import type { StringValue } from 'ms';
                 return {
                     secret: configService.get<string>('JWT_SECRET')!,
                     signOptions: {
-                        expiresIn: expiresIn as StringValue | number,
-                    },
+                        expiresIn: expiresIn as StringValue | number
+                    }
                 };
-            },
+            }
         }),
-        UsersModule,
+        UsersModule
     ],
     controllers: [AuthController],
     providers: [AuthService, JwtStrategy],
-    exports: [AuthService],
+    exports: [AuthService]
 })
 export class AuthModule {}

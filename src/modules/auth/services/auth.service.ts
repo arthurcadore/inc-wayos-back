@@ -1,9 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import {
-    AuthServiceInterface,
-    ValidedUser,
-} from '../interfaces/auth-service.interface';
+import { AuthServiceInterface, ValidedUser } from '../interfaces/auth-service.interface';
 import { UsersService } from '../../users/services/users.service';
 import { LoginRequestDto } from '../dto/login-request.dto';
 import { LoginResponseDto } from '../dto/login-response.dto';
@@ -19,13 +16,10 @@ export interface UserInToken {
 export class AuthService implements AuthServiceInterface {
     constructor(
         private readonly usersService: UsersService,
-        private readonly jwtService: JwtService,
+        private readonly jwtService: JwtService
     ) {}
 
-    async validateUser(
-        email: string,
-        password: string,
-    ): Promise<ValidedUser | null> {
+    async validateUser(email: string, password: string): Promise<ValidedUser | null> {
         const user = await this.usersService.findByEmail(email);
 
         if (user && (await bcrypt.compare(password, user.password))) {
@@ -45,7 +39,7 @@ export class AuthService implements AuthServiceInterface {
 
         const payload: UserInToken = {
             email: user.email,
-            sub: user.id,
+            sub: user.id
         };
         const access_token = this.jwtService.sign(payload);
 
@@ -55,8 +49,8 @@ export class AuthService implements AuthServiceInterface {
                 id: user.id,
                 email: user.email,
                 createdAt: user.createdAt,
-                updatedAt: user.updatedAt,
-            }),
+                updatedAt: user.updatedAt
+            })
         });
     }
 }

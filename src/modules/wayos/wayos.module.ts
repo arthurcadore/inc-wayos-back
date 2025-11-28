@@ -7,15 +7,15 @@ import { HttpModule } from '@nestjs/axios';
     imports: [
         HttpModule.register({
             timeout: 10000,
-            maxRedirects: 5,
-        }),
+            maxRedirects: 5
+        })
     ],
     providers: [
         {
             provide: WAYOS_CONSTANTS.WAYOS_SERVICE,
-            useClass: WayosService,
-        },
+            useClass: WayosService
+        }
     ],
-    exports: [WAYOS_CONSTANTS.WAYOS_SERVICE],
+    exports: [WAYOS_CONSTANTS.WAYOS_SERVICE]
 })
 export class WayosModule {}

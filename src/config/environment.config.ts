@@ -39,6 +39,7 @@ export interface EnvironmentVariables {
     INC_CLOUD_BASE_URL: string;
     INC_CLOUD_API_KEY: string;
     INC_CLOUD_DEVICE_OPERATION_METHOD: string;
+    INC_CLOUD_USERNAME: string;
 
     // WayOS Configuration
     WAYOS_BASE_URL: string;
@@ -50,14 +51,9 @@ export interface EnvironmentVariables {
     JWT_EXPIRES_IN: string;
 }
 
-export function validateEnvironment(
-    config: Record<string, unknown>,
-): EnvironmentVariables {
+export function validateEnvironment(config: Record<string, unknown>): EnvironmentVariables {
     return {
-        NODE_ENV: config.NODE_ENV as
-            | 'development'
-            | 'homologation'
-            | 'production',
+        NODE_ENV: config.NODE_ENV as 'development' | 'homologation' | 'production',
         APP_NAME: config.APP_NAME as string,
         APP_VERSION: config.APP_VERSION as string,
         APP_DESCRIPTION: config.APP_DESCRIPTION as string,
@@ -76,16 +72,15 @@ export function validateEnvironment(
         LOG_LEVEL: config.LOG_LEVEL as 'error' | 'warn' | 'info' | 'debug',
         LOG_FORMAT: config.LOG_FORMAT as 'combined' | 'json' | 'simple',
         RATE_LIMIT_TTL: parseInt(config.RATE_LIMIT_TTL as string, 10) || 60000,
-        RATE_LIMIT_LIMIT:
-            parseInt(config.RATE_LIMIT_LIMIT as string, 10) || 100,
+        RATE_LIMIT_LIMIT: parseInt(config.RATE_LIMIT_LIMIT as string, 10) || 100,
         INC_CLOUD_BASE_URL: config.INC_CLOUD_BASE_URL as string,
         INC_CLOUD_API_KEY: config.INC_CLOUD_API_KEY as string,
-        INC_CLOUD_DEVICE_OPERATION_METHOD:
-            config.INC_CLOUD_DEVICE_OPERATION_METHOD as string,
+        INC_CLOUD_DEVICE_OPERATION_METHOD: config.INC_CLOUD_DEVICE_OPERATION_METHOD as string,
+        INC_CLOUD_USERNAME: config.INC_CLOUD_USERNAME as string,
         WAYOS_BASE_URL: config.WAYOS_BASE_URL as string,
         WAYOS_ACCESS_KEY_ID: config.WAYOS_ACCESS_KEY_ID as string,
         WAYOS_ACCESS_KEY_SECRET: config.WAYOS_ACCESS_KEY_SECRET as string,
         JWT_SECRET: config.JWT_SECRET as string,
-        JWT_EXPIRES_IN: (config.JWT_EXPIRES_IN as string) || '24h',
+        JWT_EXPIRES_IN: (config.JWT_EXPIRES_IN as string) || '24h'
     };
 }

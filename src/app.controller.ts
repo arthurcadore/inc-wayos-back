@@ -1,13 +1,7 @@
-import { Controller, Get, Inject } from '@nestjs/common';
-import {
-    ApiTags,
-    ApiOperation,
-    ApiResponse,
-    ApiOkResponse,
-} from '@nestjs/swagger';
+import { Controller, Get } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiOkResponse } from '@nestjs/swagger';
 import { AppService } from './app.service';
-import { WAYOS_CONSTANTS } from './modules/wayos/wayos.constants';
-import * as wayosServiceInterface from './modules/wayos/interfaces/wayos-service.interface';
+import { ViewGlobalUseCase } from './application/use-cases/view-global.use-case';
 
 interface HealthCheckResponse {
     message: string;
@@ -16,20 +10,18 @@ interface HealthCheckResponse {
     version: string;
 }
 
-@ApiTags('Health Check')
+@ApiTags('Gateway')
 @Controller()
 export class AppController {
     constructor(
         private readonly appService: AppService,
-        @Inject(WAYOS_CONSTANTS.WAYOS_SERVICE)
-        private readonly wayosService: wayosServiceInterface.WayosServiceInterface,
+        private readonly viewGlobalUseCase: ViewGlobalUseCase
     ) {}
 
     @Get()
     @ApiOperation({
         summary: 'Health check endpoint',
-        description:
-            'Returns a simple health check message with system information',
+        description: 'Returns a simple health check message with system information'
     })
     @ApiOkResponse({
         description: 'Application is healthy and running',
@@ -38,35 +30,34 @@ export class AppController {
             properties: {
                 message: {
                     type: 'string',
-                    example: 'EACE Backend Dashboard is running!',
+                    example: 'EACE Backend Dashboard is running!'
                 },
                 timestamp: {
                     type: 'string',
                     format: 'date-time',
-                    example: '2025-11-05T10:30:00.000Z',
+                    example: '2025-11-05T10:30:00.000Z'
                 },
                 environment: {
                     type: 'string',
-                    example: 'development',
+                    example: 'development'
                 },
                 version: {
                     type: 'string',
-                    example: '0.0.1',
-                },
-            },
-        },
+                    example: '0.0.1'
+                }
+            }
+        }
     })
     @ApiResponse({
         status: 500,
-        description: 'Internal server error',
+        description: 'Internal server error'
     })
     getHealthCheck(): HealthCheckResponse {
         return this.appService.getHealthCheck();
     }
 
-    @Get('wayos-health')
+    @Get('view-global')
     async getWayosHealthCheck(): Promise<unknown> {
-        const response = await this.wayosService.getDeviceInfo('MWDM2600180OX');
-        return response;
+        return await this.viewGlobalUseCase.execute();
     }
 }

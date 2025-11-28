@@ -7,23 +7,21 @@ import { IncCloudModule } from './modules/inccloud/inccloud.module';
 import { WayosModule } from './modules/wayos/wayos.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { ViewGlobalUseCase } from './application/use-cases/view-global.use-case';
 
 @Module({
     imports: [
         ConfigModule.forRoot({
-            envFilePath: [
-                `.env.${process.env.NODE_ENV || 'development'}`,
-                '.env',
-            ],
+            envFilePath: [`.env.${process.env.NODE_ENV || 'development'}`, '.env'],
             validate: validateEnvironment,
-            isGlobal: true,
+            isGlobal: true
         }),
         IncCloudModule,
         WayosModule,
         AuthModule,
-        UsersModule,
+        UsersModule
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [AppService, ViewGlobalUseCase]
 })
 export class AppModule {}

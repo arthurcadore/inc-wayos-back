@@ -15,15 +15,15 @@ async function bootstrap() {
         new ValidationPipe({
             whitelist: true,
             forbidNonWhitelisted: true,
-            transform: true,
-        }),
+            transform: true
+        })
     );
 
     app.enableCors({
         origin: configService.get<string>('CORS_ORIGIN'),
         methods: configService.get<string>('CORS_METHODS'),
         credentials: configService.get<string>('CORS_CREDENTIALS'),
-        allowedHeaders: 'Content-Type,Authorization,Accept',
+        allowedHeaders: 'Content-Type,Authorization,Accept'
     });
 
     // Set global API prefix
@@ -45,9 +45,9 @@ async function bootstrap() {
                     type: 'http',
                     scheme: 'bearer',
                     bearerFormat: 'JWT',
-                    description: 'Enter JWT token',
+                    description: 'Enter JWT token'
                 },
-                'access-token',
+                'access-token'
             )
             .build();
 
@@ -63,9 +63,7 @@ async function bootstrap() {
 
     await app.listen(port, host);
 
-    console.log(
-        `🚀 Application is running on: http://${host}:${port}/${apiPrefix}/${apiVersion}`,
-    );
+    console.log(`🚀 Application is running on: http://${host}:${port}/${apiPrefix}/${apiVersion}`);
     console.log(`🌍 Environment: ${nodeEnv}`);
 }
 

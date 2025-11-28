@@ -48,3 +48,29 @@ export interface IncCloudDeviceOperationResponse {
     message: string;
     data: IncCloudDeviceOperation[];
 }
+
+// ### Additional DTOs ### //
+
+export interface GetShopDevicePageItem {
+    shopId: number;
+    shopName: string;
+    customType: string;
+    devModel: string;
+    devSn: string;
+    status: number;
+    onlineTime: number;
+    firstOnlineTime: number;
+    aliasName: string;
+    devType: string;
+}
+
+export interface GetShopDeviceData {
+    rowCount: number;
+    data: GetShopDevicePageItem[];
+}
+
+export interface GetShopDevicePageResponse {
+    code: number;
+    message: string;
+    data: GetShopDeviceData;
+}

@@ -4,7 +4,7 @@ import { validateEnvironment } from './environment.config';
 export default (): ConfigModuleOptions => ({
     envFilePath: [`.env.${process.env.NODE_ENV || 'development'}`, '.env'],
     validate: validateEnvironment,
-    isGlobal: true,
+    isGlobal: true
 });
 
 export const getEnvPath = (): string => {

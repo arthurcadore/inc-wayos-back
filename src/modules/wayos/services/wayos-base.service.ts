@@ -8,14 +8,11 @@ export abstract class WayosBaseService {
         return Math.floor(new Date().getTime() / 1000);
     }
 
-    public buildSignature(
-        timestamp: number,
-        bodyParams: Record<string, unknown>,
-    ): string {
+    public buildSignature(timestamp: number, bodyParams: Record<string, unknown>): string {
         const signData = {
             'X-App-Id': this.appId,
             'X-App-Secret': this.secretKey,
-            'X-Timestamp': timestamp,
+            'X-Timestamp': timestamp
         };
 
         // Adiciona todos os campos do body no sign_data
@@ -39,10 +36,7 @@ export abstract class WayosBaseService {
         const concatenatedString = concatenatedArray.join('');
 
         // SHA1 → MD5
-        const sha1 = crypto
-            .createHash('sha1')
-            .update(concatenatedString, 'utf8')
-            .digest('hex');
+        const sha1 = crypto.createHash('sha1').update(concatenatedString, 'utf8').digest('hex');
         const md5 = crypto.createHash('md5').update(sha1, 'utf8').digest('hex');
 
         return md5;

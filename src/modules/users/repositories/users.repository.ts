@@ -14,15 +14,13 @@ export class UsersRepository implements OnModuleInit {
             email: 'admin@intelbras.com.br',
             password: adminPassword,
             createdAt: new Date(),
-            updatedAt: new Date(),
+            updatedAt: new Date()
         });
         this.users.set(adminUser.id, adminUser);
     }
 
     findByEmail(email: string): Promise<User | undefined> {
-        return Promise.resolve(
-            Array.from(this.users.values()).find(u => u.email === email),
-        );
+        return Promise.resolve(Array.from(this.users.values()).find((u) => u.email === email));
     }
 
     findById(id: string): Promise<User | undefined> {
