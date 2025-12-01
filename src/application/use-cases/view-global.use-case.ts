@@ -56,6 +56,8 @@ export class ViewGlobalUseCase {
                 break;
             }
         }
+
+        this.displayDataSize(this.wayosRouterInfos, 'WayOS Router');
     }
 
     async getWayosDeviceInfos(): Promise<void> {
@@ -80,10 +82,20 @@ export class ViewGlobalUseCase {
         for (let i = 0; i < tasks.length; i += concurrency) {
             await Promise.all(tasks.slice(i, i + concurrency).map((task) => task()));
         }
+
+        this.displayDataSize(this.wayosRouterInfos, 'WayOS Router Infos');
     }
 
     async getIncCloudDevices(): Promise<void> {
         this.shopDeviceData = (await this.incCloudService.getShopDevicePage()).data;
+        this.displayDataSize(this.shopDeviceData, 'IncCloud Shop Device Data');
+    }
+
+    async displayDataSize(value: any, name: string): Promise<void> {
+        // Imprima no console o espaço em megabytes ocupado pelos dados recebidos
+        const dataSizeInBytes = Buffer.byteLength(JSON.stringify(value), 'utf8');
+        const dataSizeInMB = (dataSizeInBytes / (1024 * 1024)).toFixed(2);
+        console.log(`Tamanho dos dados do ${name} recebidos: ${dataSizeInMB} MB`);
     }
 }
 
