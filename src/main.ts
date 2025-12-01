@@ -53,7 +53,14 @@ async function bootstrap() {
 
         const document = SwaggerModule.createDocument(app, config);
         const swaggerPath = configService.get<string>('SWAGGER_PATH') || 'docs';
-        SwaggerModule.setup(swaggerPath, app, document);
+        SwaggerModule.setup(swaggerPath, app, document, {
+            // Configurações para melhorar a performance do Swagger UI
+            swaggerOptions: {
+                syntaxHighlight: false,
+                docExpansion: 'none',
+                deepLinking: false,
+            }
+        });
 
         console.log(`📚 Swagger documentation available at: /${swaggerPath}`);
     }
