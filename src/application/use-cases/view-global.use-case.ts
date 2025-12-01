@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { ShopDeviceData } from 'src/modules/inccloud/dto/inccloud-response.dto';
 import { INC_CLOUD_CONSTANTS } from 'src/modules/inccloud/inc-cloud.constants';
-import { IncCloudService } from 'src/modules/inccloud/services/inccloud.service';
+import type { IncCloudServiceInterface } from 'src/modules/inccloud/interfaces/inccloud-service.interface';
 import type { WayosServiceInterface } from 'src/modules/wayos/interfaces/wayos-service.interface';
 import { WAYOS_CONSTANTS } from 'src/modules/wayos/wayos.constants';
 
@@ -8,12 +9,13 @@ import { WAYOS_CONSTANTS } from 'src/modules/wayos/wayos.constants';
 export class ViewGlobalUseCase {
     private readonly WAYOS_PAGE_SIZE = 1000;
     private wayosRouterInfos: WayosRouterInfo[] = [];
+    private shopDeviceData: ShopDeviceData;
 
     constructor(
         @Inject(WAYOS_CONSTANTS.WAYOS_SERVICE)
         private readonly wayosService: WayosServiceInterface,
         @Inject(INC_CLOUD_CONSTANTS.INC_CLOUD_SERVICE)
-        private readonly incCloudService: IncCloudService
+        private readonly incCloudService: IncCloudServiceInterface
     ) {}
 
     async execute(): Promise<ViewGlobalUseCaseOutput> {
@@ -25,9 +27,10 @@ export class ViewGlobalUseCase {
         const endTime = Date.now();
         console.log(`Duração total da operação: ${endTime - startTime} ms`);
         return {
-            totalRouters: this.wayosRouterInfos.length,
-            onlineRouters: this.wayosRouterInfos.filter((router) => router.online).length,
-            wayosRouterInfos: this.wayosRouterInfos
+            // totalRouters: this.wayosRouterInfos.length,
+            // onlineRouters: this.wayosRouterInfos.filter((router) => router.online).length,
+            // wayosRouterInfos: this.wayosRouterInfos,
+            shopDeviceData: this.shopDeviceData,
         };
     }
 
@@ -80,7 +83,7 @@ export class ViewGlobalUseCase {
     }
 
     async getIncCloudDevices(): Promise<void> {
-        const devices = await this.incCloudService.getShops();
+        this.shopDeviceData = (await this.incCloudService.getShopDevicePage()).data;
     }
 }
 
@@ -91,7 +94,8 @@ export interface WayosRouterInfo {
 }
 
 export interface ViewGlobalUseCaseOutput {
-    totalRouters: number;
-    onlineRouters: number;
-    wayosRouterInfos: WayosRouterInfo[];
+    // totalRouters: number;
+    // onlineRouters: number;
+    // wayosRouterInfos: WayosRouterInfo[];
+    shopDeviceData: ShopDeviceData;
 }

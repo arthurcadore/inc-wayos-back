@@ -6,8 +6,9 @@ import { INC_CLOUD_CONSTANTS } from './inc-cloud.constants';
 @Module({
     imports: [
         HttpModule.register({
-            timeout: 10000,
-            maxRedirects: 5
+            timeout: 0,
+            maxRedirects: 3,
+            maxBodyLength: Infinity,
         })
     ],
     providers: [
