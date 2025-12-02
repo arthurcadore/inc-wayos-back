@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { response } from 'express';
 import { ShopDeviceData } from 'src/modules/inccloud/dto/inccloud-response.dto';
 import { INC_CLOUD_CONSTANTS } from 'src/modules/inccloud/inc-cloud.constants';
 import type { IncCloudServiceInterface } from 'src/modules/inccloud/interfaces/inccloud-service.interface';
@@ -8,6 +9,8 @@ import { WAYOS_CONSTANTS } from 'src/modules/wayos/wayos.constants';
 @Injectable()
 export class ViewGlobalUseCase {
     private readonly WAYOS_PAGE_SIZE = 1000;
+
+    private viewGlobalItems: ViewGlobalItem[] = [];
     private wayosRouterInfos: WayosRouterInfo[] = [];
     private shopDeviceData: ShopDeviceData;
 
@@ -16,22 +19,17 @@ export class ViewGlobalUseCase {
         private readonly wayosService: WayosServiceInterface,
         @Inject(INC_CLOUD_CONSTANTS.INC_CLOUD_SERVICE)
         private readonly incCloudService: IncCloudServiceInterface
-    ) {}
+    ) { }
 
     async execute(): Promise<ViewGlobalUseCaseOutput> {
-        // Implemente um marcador de tempo para medir a duração total da operação
         const startTime = Date.now();
-        // await this.getWayosUserScenes();
-        // await this.getWayosDeviceInfos();
+        await this.getWayosUserScenes();
+        await this.getWayosDeviceInfos();
         await this.getIncCloudDevices();
+        this.parseDeviceItems();
         const endTime = Date.now();
         console.log(`Duração total da operação: ${endTime - startTime} ms`);
-        return {
-            // totalRouters: this.wayosRouterInfos.length,
-            // onlineRouters: this.wayosRouterInfos.filter((router) => router.online).length,
-            // wayosRouterInfos: this.wayosRouterInfos,
-            shopDeviceData: this.shopDeviceData,
-        };
+        return this.parseOutput();
     }
 
     async getWayosUserScenes(): Promise<void> {
@@ -42,13 +40,17 @@ export class ViewGlobalUseCase {
                 throw new HttpException(response.msg || 'Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            // console.log('Fetched Wayos User Scenes:', response.data.list.length);
+            console.log('Fetched Wayos User Scenes:', response.data.list.length);
 
             this.wayosRouterInfos.push(
                 ...response.data.list.map((item) => ({
-                    sn: item.scene.sn,
                     inep: item.scene.name,
-                    online: false // Placeholder, will be updated later
+                    sn: item.scene.sn,
+                    model: null,
+                    wanIp: null,
+                    lanIp: null,
+                    lanMac: null,
+                    online: false,
                 }))
             );
 
@@ -73,6 +75,10 @@ export class ViewGlobalUseCase {
 
             this.wayosRouterInfos = this.wayosRouterInfos.map((routerInfo) => {
                 if (routerInfo.sn === response.data.sn) {
+                    routerInfo.model = response.data.model;
+                    routerInfo.wanIp = response.data.wan_ip;
+                    routerInfo.lanIp = response.data.lan_ip;
+                    routerInfo.lanMac = response.data.lan_mac;
                     routerInfo.online = response.data.online;
                 }
                 return routerInfo;
@@ -83,12 +89,78 @@ export class ViewGlobalUseCase {
             await Promise.all(tasks.slice(i, i + concurrency).map((task) => task()));
         }
 
+        this.viewGlobalItems.push(
+            ...this.wayosRouterInfos.map((item) => ({
+                inep: item.inep,
+                router: item,
+                switches: [],
+                aps: [],
+            }))
+        );
+
         this.displayDataSize(this.wayosRouterInfos, 'WayOS Router Infos');
     }
 
     async getIncCloudDevices(): Promise<void> {
-        this.shopDeviceData = (await this.incCloudService.getShopDevicePage()).data;
+        const response = await this.incCloudService.getShopDevicePage();
+        this.shopDeviceData = response.data;
         this.displayDataSize(this.shopDeviceData, 'IncCloud Shop Device Data');
+    }
+
+    parseDeviceItems(): void {
+        // Agrupar shopDeviceItems por shopName (INEP)
+        const groupedDevicesByInep: Record<string, IncCloudDevice[]> = {};
+
+        for (const item of this.shopDeviceData.data) {
+            const device: IncCloudDevice = {
+                devType: item.devType,
+                sn: item.devSn,
+                online: item.status === 1,
+                onlineTime: item.onlineTime,
+                firstOnlineTime: item.firstOnlineTime,
+                aliasName: item.aliasName,
+            };
+
+            const inep = item.shopName.replaceAll(' ', '').toUpperCase();
+
+            if (!groupedDevicesByInep[inep]) {
+                groupedDevicesByInep[inep] = [];
+            }
+
+            groupedDevicesByInep[inep].push(device);
+        }
+
+        // Mapear dispositivos agrupados para viewGlobalItems
+        for (const inep in groupedDevicesByInep) {
+            const targetItem = this.viewGlobalItems.find((item) => item.inep === inep);
+
+            if (targetItem) {
+                const devices = groupedDevicesByInep[inep];
+                targetItem.switches = devices.filter((device) => device.devType.startsWith('SWITCH'));
+                targetItem.aps = devices.filter((device) => device.devType.startsWith('CLOUDAP'));
+            }
+        }
+
+        this.displayDataSize(this.viewGlobalItems, 'View Global Items after IncCloud');
+    }
+
+    parseOutput(): ViewGlobalUseCaseOutput {
+        const output: ViewGlobalUseCaseOutput = {
+            refreshedAt: new Date().toISOString(),
+
+            totalRouters: this.viewGlobalItems.length,
+            onlineRouters: this.viewGlobalItems.filter((item) => item.router.online).length,
+
+            totalSwitches: this.viewGlobalItems.reduce((sum, item) => sum + item.switches.length, 0),
+            onlineSwitches: this.viewGlobalItems.reduce((sum, item) => sum + item.switches.filter((sw) => sw.online).length, 0),
+
+            totalAps: this.viewGlobalItems.reduce((sum, item) => sum + item.aps.length, 0),
+            onlineAps: this.viewGlobalItems.reduce((sum, item) => sum + item.aps.filter((ap) => ap.online).length, 0),
+
+            data: this.viewGlobalItems,
+        };
+
+        return output;
     }
 
     async displayDataSize(value: any, name: string): Promise<void> {
@@ -100,14 +172,42 @@ export class ViewGlobalUseCase {
 }
 
 export interface WayosRouterInfo {
-    sn: string;
     inep: string;
+    sn: string;
+    model: string | null;
+    wanIp: string | null;
+    lanIp: string | null;
+    lanMac: string | null;
     online: boolean;
 }
 
+export interface IncCloudDevice {
+    devType: string;
+    sn: string;
+    online: boolean;
+    onlineTime: number;
+    firstOnlineTime: number;
+    aliasName: string;
+}
+
+export interface ViewGlobalItem {
+    inep: string;
+    router: WayosRouterInfo;
+    switches: IncCloudDevice[]; // devType === 'SWITCH'
+    aps: IncCloudDevice[]; // devType === 'CLOUDAP'
+}
+
 export interface ViewGlobalUseCaseOutput {
-    // totalRouters: number;
-    // onlineRouters: number;
-    // wayosRouterInfos: WayosRouterInfo[];
-    shopDeviceData: ShopDeviceData;
+    refreshedAt: string;
+
+    totalRouters: number;
+    onlineRouters: number;
+
+    totalSwitches: number;
+    onlineSwitches: number;
+
+    totalAps: number;
+    onlineAps: number;
+
+    data: ViewGlobalItem[];
 }
