@@ -1,19 +1,15 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { firstValueFrom, catchError } from 'rxjs';
-import { AxiosError } from 'axios';
 import { WayosGetDeviceInfoResponse, WayosGetUserSceneListResponse } from '../dto/wayos-response.dto';
 import { WayosServiceInterface } from '../interfaces/wayos-service.interface';
-import { defer } from 'rxjs';
 import { WayosBaseService } from './wayos-base.service';
+import axios from 'axios';
 
 @Injectable()
 export class WayosService extends WayosBaseService implements WayosServiceInterface {
     private readonly baseUrl: string;
 
     constructor(
-        private readonly httpService: HttpService,
         private readonly configService: ConfigService
     ) {
         super();
@@ -21,65 +17,65 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
     }
 
     async getUserSceneList(page: number, limit: number): Promise<WayosGetUserSceneListResponse> {
-        const response = await firstValueFrom(
-            defer(() => {
-                const body = {
-                    request_id: this.generateRequestId(),
-                    page,
-                    limit
-                };
-                const timestamp = this.getTimestamp();
-                const signature = this.buildSignature(timestamp, body);
-                const headers = {
-                    'Content-Type': 'application/json',
-                    'X-App-Id': this.appId,
-                    'X-Timestamp': timestamp,
-                    'X-Signature': signature
-                };
-
-                return this.httpService.post<WayosGetUserSceneListResponse>(`${this.baseUrl}/open-api/v1/user-scene/list`, body, { headers });
-            }).pipe(
-                // retry({
-                //     count: 3,
-                //     delay: (error, retryCount) => timer(Math.pow(2, retryCount - 1) * 1000),
-                // }),
-                catchError((error: AxiosError) => {
-                    throw new HttpException(error.response?.data || 'Internal Server Error', error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR);
-                })
-            )
-        );
-
-        return response.data;
+        try {
+            const body = {
+                request_id: this.generateRequestId(),
+                page,
+                limit
+            };
+            const timestamp = this.getTimestamp();
+            const signature = this.buildSignature(timestamp, body);
+            const headers = {
+                'Content-Type': 'application/json',
+                'X-App-Id': this.appId,
+                'X-Timestamp': timestamp,
+                'X-Signature': signature
+            };
+            const response = await axios.request<WayosGetUserSceneListResponse>({
+                method: 'POST',
+                maxBodyLength: Infinity,
+                url: `${this.baseUrl}/open-api/v1/user-scene/list`,
+                headers,
+                data: body,
+            });
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                throw new HttpException(error.response?.data || 'Internal Server Error', error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR);
+            } else {
+                throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
     }
 
     async getDeviceInfo(sn: string): Promise<WayosGetDeviceInfoResponse> {
-        const response = await firstValueFrom(
-            defer(() => {
-                const body = {
-                    request_id: this.generateRequestId(),
-                    sn
-                };
-                const timestamp = this.getTimestamp();
-                const signature = this.buildSignature(timestamp, body);
-                const headers = {
-                    'Content-Type': 'application/json',
-                    'X-App-Id': this.appId,
-                    'X-Timestamp': timestamp,
-                    'X-Signature': signature
-                };
-
-                return this.httpService.post<WayosGetDeviceInfoResponse>(`${this.baseUrl}/open-api/v1/device/info`, body, { headers });
-            }).pipe(
-                // retry({
-                //     count: 3,
-                //     delay: (error, retryCount) => timer(Math.pow(2, retryCount - 1) * 1000),
-                // }),
-                catchError((error: AxiosError) => {
-                    throw new HttpException(error.response?.data || 'Internal Server Error', error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR);
-                })
-            )
-        );
-
-        return response.data;
+        try {
+            const body = {
+                request_id: this.generateRequestId(),
+                sn
+            };
+            const timestamp = this.getTimestamp();
+            const signature = this.buildSignature(timestamp, body);
+            const headers = {
+                'Content-Type': 'application/json',
+                'X-App-Id': this.appId,
+                'X-Timestamp': timestamp,
+                'X-Signature': signature
+            };
+            const response = await axios.request<WayosGetDeviceInfoResponse>({
+                method: 'POST',
+                maxBodyLength: Infinity,
+                url: `${this.baseUrl}/open-api/v1/device/info`,
+                headers,
+                data: body,
+            });
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                throw new HttpException(error.response?.data || 'Internal Server Error', error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR);
+            } else {
+                throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
     }
 }

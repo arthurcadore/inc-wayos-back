@@ -1,15 +1,9 @@
 import { Module } from '@nestjs/common';
 import { WayosService } from './services/wayos.service';
 import { WAYOS_CONSTANTS } from './wayos.constants';
-import { HttpModule } from '@nestjs/axios';
 
 @Module({
-    imports: [
-        HttpModule.register({
-            timeout: 10000,
-            maxRedirects: 5
-        })
-    ],
+    imports: [],
     providers: [
         {
             provide: WAYOS_CONSTANTS.WAYOS_SERVICE,

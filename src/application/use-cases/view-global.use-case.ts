@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { response } from 'express';
 import { ShopDeviceData } from 'src/modules/inccloud/dto/inccloud-response.dto';
 import { INC_CLOUD_CONSTANTS } from 'src/modules/inccloud/inc-cloud.constants';
 import type { IncCloudServiceInterface } from 'src/modules/inccloud/interfaces/inccloud-service.interface';
@@ -23,13 +22,19 @@ export class ViewGlobalUseCase {
 
     async execute(): Promise<ViewGlobalUseCaseOutput> {
         const startTime = Date.now();
-        await this.getWayosUserScenes();
-        await this.getWayosDeviceInfos();
         await this.getIncCloudDevices();
-        this.parseDeviceItems();
+        // await this.getWayosUserScenes();
+        // await this.getWayosDeviceInfos();
+        // this.parseDeviceItems();
         const endTime = Date.now();
         console.log(`Duração total da operação: ${endTime - startTime} ms`);
         return this.parseOutput();
+    }
+
+    async getIncCloudDevices(): Promise<void> {
+        const response = await this.incCloudService.getShopDevicePage();
+        this.shopDeviceData = response.data;
+        this.displayDataSize(this.shopDeviceData, 'IncCloud Shop Device Data');
     }
 
     async getWayosUserScenes(): Promise<void> {
@@ -83,7 +88,7 @@ export class ViewGlobalUseCase {
                 throw new HttpException(response.msg || 'Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            // console.log('Fetched Wayos Device Info:', response.data.sn);
+            console.log('Fetched Wayos Device Info:', response.data.sn);
 
             this.wayosRouterInfos = this.wayosRouterInfos.map((routerInfo) => {
                 if (routerInfo.sn === response.data.sn) {
@@ -111,12 +116,6 @@ export class ViewGlobalUseCase {
         );
 
         this.displayDataSize(this.wayosRouterInfos, 'WayOS Router Infos');
-    }
-
-    async getIncCloudDevices(): Promise<void> {
-        const response = await this.incCloudService.getShopDevicePage();
-        this.shopDeviceData = response.data;
-        this.displayDataSize(this.shopDeviceData, 'IncCloud Shop Device Data');
     }
 
     parseDeviceItems(): void {

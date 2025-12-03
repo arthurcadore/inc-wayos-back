@@ -1,16 +1,9 @@
 import { Module } from '@nestjs/common';
 import { IncCloudService } from './services/inccloud.service';
-import { HttpModule } from '@nestjs/axios';
 import { INC_CLOUD_CONSTANTS } from './inc-cloud.constants';
 
 @Module({
-    imports: [
-        HttpModule.register({
-            timeout: 0,
-            maxRedirects: 3,
-            maxBodyLength: Infinity,
-        })
-    ],
+    imports: [],
     providers: [
         {
             provide: INC_CLOUD_CONSTANTS.INC_CLOUD_SERVICE,
