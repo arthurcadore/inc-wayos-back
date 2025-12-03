@@ -42,8 +42,20 @@ export class ViewGlobalUseCase {
 
             console.log('Fetched Wayos User Scenes:', response.data.list.length);
 
+            // Filtrar cenas com nomes correspondentes ao padrão INEP-XXXXXXXX
+            const filteredScenes = response.data.list.filter((item) => {
+                const inep = item.scene.name.replaceAll(' ', '').toUpperCase();
+
+                if (/^INEP-\d{8}$/.test(inep)) {
+                    item.scene.name = inep;
+                    return true;
+                }
+
+                return false;
+            });
+
             this.wayosRouterInfos.push(
-                ...response.data.list.map((item) => ({
+                ...filteredScenes.map((item) => ({
                     inep: item.scene.name,
                     sn: item.scene.sn,
                     model: null,
