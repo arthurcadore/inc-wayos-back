@@ -1,17 +1,22 @@
-import dns from 'dns';
-dns.setDefaultResultOrder('ipv4first');
+// import dns from 'dns';
+// dns.setDefaultResultOrder('ipv4first');
 
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GetShopDevicePageResponse } from '../dto/inccloud-response.dto';
 import { IncCloudServiceInterface } from '../interfaces/inccloud-service.interface';
 import axios from 'axios';
+import * as http from 'http';
+import * as https from 'https';
 
 @Injectable()
 export class IncCloudService implements IncCloudServiceInterface {
     private readonly baseUrl: string;
     private readonly apiKey: string;
     private readonly userName: string;
+
+    private readonly httpAgent = new http.Agent({ family: 4 });
+    private readonly httpsAgent = new https.Agent({ family: 4 });
 
     constructor(
         private readonly configService: ConfigService
@@ -29,6 +34,8 @@ export class IncCloudService implements IncCloudServiceInterface {
 
             const data = JSON.stringify({});
 
+            const isHttps = this.baseUrl.startsWith('https://');
+
             const config = {
                 method: 'post' as const,
                 maxBodyLength: Infinity,
@@ -40,6 +47,8 @@ export class IncCloudService implements IncCloudServiceInterface {
                 },
                 data: data,
                 timeout: 30000, // 30 segundos (suficiente já que curl demora 1s)
+                httpAgent: isHttps ? undefined : this.httpAgent,
+                httpsAgent: isHttps ? this.httpsAgent : undefined,
             };
 
             const response = await axios.request<GetShopDevicePageResponse>(config);
