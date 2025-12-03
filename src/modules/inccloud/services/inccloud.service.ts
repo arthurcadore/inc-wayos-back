@@ -1,9 +1,11 @@
+import dns from 'dns';
+dns.setDefaultResultOrder('ipv4first');
+
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GetShopDevicePageResponse } from '../dto/inccloud-response.dto';
 import { IncCloudServiceInterface } from '../interfaces/inccloud-service.interface';
 import axios from 'axios';
-import https from 'https';
 
 @Injectable()
 export class IncCloudService implements IncCloudServiceInterface {
@@ -17,6 +19,7 @@ export class IncCloudService implements IncCloudServiceInterface {
         this.baseUrl = this.configService.get<string>('INC_CLOUD_BASE_URL')!;
         this.apiKey = this.configService.get<string>('INC_CLOUD_API_KEY')!;
         this.userName = this.configService.get<string>('INC_CLOUD_USERNAME')!;
+
     }
 
     async getShopDevicePage(): Promise<GetShopDevicePageResponse> {
@@ -24,19 +27,19 @@ export class IncCloudService implements IncCloudServiceInterface {
             console.log(`[IncCloud] Iniciando requisição para: ${this.baseUrl}/shop/device/page`);
             const startTime = Date.now();
 
-            // Configuração EXATAMENTE como o Postman gera
             const data = JSON.stringify({});
 
             const config = {
-                method: 'post',
+                method: 'post' as const,
                 maxBodyLength: Infinity,
                 url: `${this.baseUrl}/shop/device/page?user_name=${this.userName}&locale=en`,
                 headers: {
                     'accept': 'application/json',
                     'apikey': this.apiKey,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                data: data
+                data: data,
+                timeout: 30000, // 30 segundos (suficiente já que curl demora 1s)
             };
 
             const response = await axios.request<GetShopDevicePageResponse>(config);
@@ -57,6 +60,7 @@ export class IncCloudService implements IncCloudServiceInterface {
                     error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR
                 );
             } else {
+                console.error(`[IncCloud] Erro desconhecido:`, error);
                 throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
