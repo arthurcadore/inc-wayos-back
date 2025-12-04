@@ -23,17 +23,24 @@ export class ViewGlobalUseCase {
     async execute(): Promise<ViewGlobalUseCaseOutput> {
         const startTime = Date.now();
         await this.getIncCloudDevices();
-        // await this.getWayosUserScenes();
-        // await this.getWayosDeviceInfos();
-        // this.parseDeviceItems();
+        await this.getWayosUserScenes();
+        await this.getWayosDeviceInfos();
+        this.parseDeviceItems();
         const endTime = Date.now();
         console.log(`Duração total da operação: ${endTime - startTime} ms`);
         return this.parseOutput();
     }
 
+    private adjustShopName(): void {
+        for (const item of this.shopDeviceData.data) {
+            item.shopName = item.shopName.replaceAll(' ', '').toUpperCase();
+        }
+    }
+
     async getIncCloudDevices(): Promise<void> {
         const response = await this.incCloudService.getShopDevicePage();
         this.shopDeviceData = response.data;
+        this.adjustShopName();
         this.displayDataSize(this.shopDeviceData, 'IncCloud Shop Device Data');
     }
 
@@ -47,20 +54,9 @@ export class ViewGlobalUseCase {
 
             console.log('Fetched Wayos User Scenes:', response.data.list.length);
 
-            // Filtrar cenas com nomes correspondentes ao padrão INEP-XXXXXXXX
-            const filteredScenes = response.data.list.filter((item) => {
-                const inep = item.scene.name.replaceAll(' ', '').toUpperCase();
-
-                if (/^INEP-\d{8}$/.test(inep)) {
-                    item.scene.name = inep;
-                    return true;
-                }
-
-                return false;
-            });
 
             this.wayosRouterInfos.push(
-                ...filteredScenes.map((item) => ({
+                ...response.data.list.map((item) => ({
                     inep: item.scene.name,
                     sn: item.scene.sn,
                     model: null,
@@ -88,7 +84,7 @@ export class ViewGlobalUseCase {
                 throw new HttpException(response.msg || 'Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            console.log('Fetched Wayos Device Info:', response.data.sn);
+            // console.log('Fetched Wayos Device Info:', response.data.sn);
 
             this.wayosRouterInfos = this.wayosRouterInfos.map((routerInfo) => {
                 if (routerInfo.sn === response.data.sn) {
