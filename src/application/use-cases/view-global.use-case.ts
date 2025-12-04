@@ -22,6 +22,7 @@ export class ViewGlobalUseCase {
 
     async execute(): Promise<ViewGlobalUseCaseOutput> {
         const startTime = Date.now();
+        this.initializeProperties();
         await this.getIncCloudDevices();
         await this.getWayosUserScenes();
         await this.getWayosDeviceInfos();
@@ -29,6 +30,12 @@ export class ViewGlobalUseCase {
         const endTime = Date.now();
         console.log(`Duração total da operação: ${endTime - startTime} ms`);
         return this.parseOutput();
+    }
+
+    private initializeProperties(): void {
+        this.viewGlobalItems = [];
+        this.wayosRouterInfos = [];
+        this.shopDeviceData = null as any;
     }
 
     private adjustShopName(): void {
