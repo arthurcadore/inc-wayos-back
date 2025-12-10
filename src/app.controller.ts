@@ -1,7 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiOkResponse } from '@nestjs/swagger';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { ViewGlobalUseCase } from './application/use-cases/view-global.use-case';
+import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
+import { ConnectedDevicesUseCase } from './application/use-cases/connected-devices.use-case';
+import { GetAlarmLogListUseCase } from './application/use-cases/get-alarm-log-list.use-case';
 
 interface HealthCheckResponse {
     message: string;
@@ -15,7 +18,9 @@ interface HealthCheckResponse {
 export class AppController {
     constructor(
         private readonly appService: AppService,
-        private readonly viewGlobalUseCase: ViewGlobalUseCase
+        private readonly viewGlobalUseCase: ViewGlobalUseCase,
+        private readonly connectedDevicesUseCase: ConnectedDevicesUseCase,
+        private readonly getAlarmLogListUseCase: GetAlarmLogListUseCase,
     ) {}
 
     @Get()
@@ -56,8 +61,24 @@ export class AppController {
         return this.appService.getHealthCheck();
     }
 
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
     @Get('view-global')
     async getWayosHealthCheck(): Promise<unknown> {
         return await this.viewGlobalUseCase.execute();
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @Get('connected-devices/:sn')
+    async getConnectedDevices(@Param('sn') sn: string): Promise<any> {
+        return await this.connectedDevicesUseCase.execute(sn);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @Get('alarm-logs/:sceneId')
+    async getAlarmLogs(@Param('sceneId') sceneId: number): Promise<any> {
+        return await this.getAlarmLogListUseCase.execute(sceneId);
     }
 }

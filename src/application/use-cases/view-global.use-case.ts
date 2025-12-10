@@ -4,6 +4,8 @@ import { INC_CLOUD_CONSTANTS } from 'src/modules/inccloud/inc-cloud.constants';
 import type { IncCloudServiceInterface } from 'src/modules/inccloud/interfaces/inccloud-service.interface';
 import type { WayosServiceInterface } from 'src/modules/wayos/interfaces/wayos-service.interface';
 import { WAYOS_CONSTANTS } from 'src/modules/wayos/wayos.constants';
+import { PerformanceLogger } from 'src/shared/utils/performance-logger';
+import { IncCloudDevice, ViewGlobalItem, ViewGlobalUseCaseOutput, WayosRouterInfo } from './dto/view-global';
 
 @Injectable()
 export class ViewGlobalUseCase {
@@ -48,7 +50,7 @@ export class ViewGlobalUseCase {
         const response = await this.incCloudService.getShopDevicePage();
         this.shopDeviceData = response.data;
         this.adjustShopName();
-        this.displayDataSize(this.shopDeviceData, 'IncCloud Shop Device Data');
+        PerformanceLogger.logDataSize(this.shopDeviceData, 'IncCloud Shop Device Data');
     }
 
     async getWayosUserScenes(): Promise<void> {
@@ -79,7 +81,7 @@ export class ViewGlobalUseCase {
             }
         }
 
-        this.displayDataSize(this.wayosRouterInfos, 'WayOS Router');
+        PerformanceLogger.logDataSize(this.wayosRouterInfos, 'WayOS Router');
     }
 
     async getWayosDeviceInfos(): Promise<void> {
@@ -118,7 +120,7 @@ export class ViewGlobalUseCase {
             }))
         );
 
-        this.displayDataSize(this.wayosRouterInfos, 'WayOS Router Infos');
+        PerformanceLogger.logDataSize(this.wayosRouterInfos, 'WayOS Router Infos');
     }
 
     parseDeviceItems(): void {
@@ -155,7 +157,7 @@ export class ViewGlobalUseCase {
             }
         }
 
-        this.displayDataSize(this.viewGlobalItems, 'View Global Items after IncCloud');
+        PerformanceLogger.logDataSize(this.viewGlobalItems, 'View Global Items after IncCloud');
     }
 
     parseOutput(): ViewGlobalUseCaseOutput {
@@ -176,52 +178,4 @@ export class ViewGlobalUseCase {
 
         return output;
     }
-
-    async displayDataSize(value: any, name: string): Promise<void> {
-        // Imprima no console o espaço em megabytes ocupado pelos dados recebidos
-        const dataSizeInBytes = Buffer.byteLength(JSON.stringify(value), 'utf8');
-        const dataSizeInMB = (dataSizeInBytes / (1024 * 1024)).toFixed(2);
-        console.log(`Tamanho dos dados do ${name} recebidos: ${dataSizeInMB} MB`);
-    }
-}
-
-export interface WayosRouterInfo {
-    inep: string;
-    sn: string;
-    model: string | null;
-    wanIp: string | null;
-    lanIp: string | null;
-    lanMac: string | null;
-    online: boolean;
-}
-
-export interface IncCloudDevice {
-    devType: string;
-    sn: string;
-    online: boolean;
-    onlineTime: number;
-    firstOnlineTime: number;
-    aliasName: string;
-}
-
-export interface ViewGlobalItem {
-    inep: string;
-    router: WayosRouterInfo;
-    switches: IncCloudDevice[]; // devType === 'SWITCH'
-    aps: IncCloudDevice[]; // devType === 'CLOUDAP'
-}
-
-export interface ViewGlobalUseCaseOutput {
-    refreshedAt: string;
-
-    totalRouters: number;
-    onlineRouters: number;
-
-    totalSwitches: number;
-    onlineSwitches: number;
-
-    totalAps: number;
-    onlineAps: number;
-
-    data: ViewGlobalItem[];
 }

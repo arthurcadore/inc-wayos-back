@@ -53,3 +53,63 @@ export interface WayosGetUserSceneListResponse {
     msg: string;
     data: WayosGetUserSceneData;
 }
+
+export interface WayosGetDeviceOnlineUser {
+    auth_type: number;
+    conn_type: number;
+    down_flow: number;
+    ip: string;
+    login_at: number;
+    logout_at: number;
+    mac: string;
+    mfr: number;
+    name: string;
+    os: number;
+    sn: string;
+    ssid: string;
+    status: number;
+    ua: string;
+    up_flow: number;
+}
+
+export interface WayosGetDeviceOnlineUserData {
+    total: number;
+    list: WayosGetDeviceOnlineUser[];
+}
+
+export interface WayosGetDeviceOnlineUserResponse {
+    code: number;
+    msg: string;
+    data: WayosGetDeviceOnlineUserData;
+}
+
+export enum WayosAlarmType {
+    DEV_ONLINE = 'dev_online',
+    DEV_OFFLINE = 'dev_offline',
+    DEV_ATTACKED = 'dev_attacked',
+}
+
+export interface WayosAlarmLogItem {
+    id: string;
+    create_at: string;
+    update_at: string;
+    happen_at: string;
+    scene_id: number;
+    sn: string;
+    level: number;
+    type: WayosAlarmType;
+    msg: string;
+    status: number;
+    pushed: boolean;
+}
+
+export interface WayosAlarmLogData {
+    total: number;
+    list: WayosAlarmLogItem[];
+}
+
+export interface WayosAlarmLogResponse {
+    code: number;
+    msg: string;
+    data: WayosAlarmLogData;
+}
