@@ -10,6 +10,7 @@ import { UsersModule } from './modules/users/users.module';
 import { ViewGlobalUseCase } from './application/use-cases/view-global.use-case';
 import { ConnectedDevicesUseCase } from './application/use-cases/connected-devices.use-case';
 import { GetAlarmLogListUseCase } from './application/use-cases/get-alarm-log-list.use-case';
+import { GetLastMomentOfflineListUseCase } from './application/use-cases/get-last-moment-offline-list.use-case';
 
 @Module({
     imports: [
@@ -28,6 +29,7 @@ import { GetAlarmLogListUseCase } from './application/use-cases/get-alarm-log-li
         ViewGlobalUseCase,
         ConnectedDevicesUseCase,
         GetAlarmLogListUseCase,
+        GetLastMomentOfflineListUseCase,
         AppService,
     ]
 })

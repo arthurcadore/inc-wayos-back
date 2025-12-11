@@ -67,6 +67,7 @@ export class ViewGlobalUseCase {
             this.wayosRouterInfos.push(
                 ...response.data.list.map((item) => ({
                     inep: item.scene.name,
+                    sceneId: item.scene_id,
                     sn: item.scene.sn,
                     model: null,
                     wanIp: null,

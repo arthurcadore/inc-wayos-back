@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { WayosAlarmLogResponse, WayosGetDeviceInfoResponse, WayosGetDeviceOnlineUserResponse, WayosGetUserSceneListResponse } from '../dto/wayos-response.dto';
+import { WayosAlarmLogItem, WayosAlarmLogResponse, WayosGetDeviceInfoResponse, WayosGetDeviceOnlineUserResponse, WayosGetUserSceneListResponse } from '../dto/wayos-response.dto';
 import { WayosServiceInterface } from '../interfaces/wayos-service.interface';
 import { WayosBaseService } from './wayos-base.service';
 import axios from 'axios';
@@ -143,5 +143,26 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
                 throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
+    }
+
+    async getAlarmLogListAllPages(sceneId: number, startAt: string, endAt: string): Promise<WayosAlarmLogItem[]> {
+        const pageSize = 10;
+        const alarmLogs: WayosAlarmLogItem[] = [];
+
+        while (true) {
+            const response = await this.getAlarmLogList(sceneId, Math.floor(alarmLogs.length / pageSize) + 1, pageSize, startAt, endAt);
+
+            if (response.code !== 0) {
+                throw new Error(response.msg || 'Internal Server Error');
+            }
+
+            alarmLogs.push(...response.data.list);
+
+            if (alarmLogs.length >= response.data.total) {
+                break;
+            }
+        }
+
+        return alarmLogs;
     }
 }

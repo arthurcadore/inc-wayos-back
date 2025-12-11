@@ -31,4 +31,18 @@ export class DateConverter {
     public static toTimestamp(date: Date): number {
         return Math.floor(date.getTime() / 1000);
     }
+
+    /**
+     * @description Cria as datas de início e fim no formato ISO 8601 para o intervalo de dias definido
+     * @param daysRange Representa o número de dias para o intervalo
+     * @returns Objeto com as datas de início (startAt) e fim (endAt)
+     */
+    public static createRangeDates(daysRange: number): { startAt: string; endAt: string } {
+        const endAtDate = new Date();
+        const startAtDate = new Date(endAtDate);
+        startAtDate.setDate(startAtDate.getDate() - daysRange);
+        const startAt = DateConverter.toISO8601(startAtDate);
+        const endAt = DateConverter.toISO8601(endAtDate);
+        return { startAt, endAt };
+    }
 }
