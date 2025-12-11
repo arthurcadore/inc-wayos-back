@@ -32,6 +32,7 @@ export class IncCloudService implements IncCloudServiceInterface {
         // Configura retry UMA VEZ na instância
         axiosRetry(this.axiosInstance, {
             retries: 10,
+            shouldResetTimeout: true,
             retryDelay: axiosRetry.exponentialDelay, // Delay exponencial (1s, 2s, 4s)
             retryCondition: (error) => {
                 // Retry apenas em erros de rede ou timeout
