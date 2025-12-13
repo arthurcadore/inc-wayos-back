@@ -7,7 +7,7 @@ import { ConnectedDevicesUseCase } from './application/use-cases/connected-devic
 import { GetAlarmLogListUseCase } from './application/use-cases/get-alarm-log-list.use-case';
 import * as data from './view-global-response.json';
 import { delay } from './shared/utils/delay';
-import { GetLastMomentOfflineListUseCase } from './application/use-cases/get-last-moment-offline-list.use-case';
+import { GetWayosLastOfflineMomentListUseCase } from './application/use-cases/get-last-moment-offline-list.use-case';
 
 interface HealthCheckResponse {
     message: string;
@@ -24,7 +24,7 @@ export class AppController {
         private readonly viewGlobalUseCase: ViewGlobalUseCase,
         private readonly connectedDevicesUseCase: ConnectedDevicesUseCase,
         private readonly getAlarmLogListUseCase: GetAlarmLogListUseCase,
-        private readonly getLastMomentOfflineListUseCase: GetLastMomentOfflineListUseCase,
+        private readonly getWayosLastOfflineMomentListUseCase: GetWayosLastOfflineMomentListUseCase,
     ) {}
 
     @Get()
@@ -90,8 +90,8 @@ export class AppController {
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('access-token')
-    @Get('alarm-logs/last-moment-offline/:sceneId')
-    async getLastMomentOfflineList(@Param('sceneId') sceneId: number): Promise<any[]> {
+    @Get('wayos-last-offline-moment-list/:sceneId')
+    async getWayosLastOfflineMomentList(@Param('sceneId') sceneId: number): Promise<any[]> {
         // await delay(1500);
         // return [
         //     {
@@ -125,6 +125,14 @@ export class AppController {
         // await delay(1500);
         // throw new InternalServerErrorException('Simulated internal server error... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');
 
-        return await this.getLastMomentOfflineListUseCase.execute(sceneId);
+        return await this.getWayosLastOfflineMomentListUseCase.execute(sceneId);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @Get('inccloud-last-offline-moment-list/:sn')
+    async getIncCloudLastOfflineMomentList(@Param('sn') sn: string): Promise<any[]> {
+        // Implementation for IncCloud last offline moment list goes here
+        return [];
     }
 }

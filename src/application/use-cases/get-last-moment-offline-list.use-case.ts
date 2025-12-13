@@ -5,7 +5,7 @@ import type { WayosServiceInterface } from 'src/modules/wayos/interfaces/wayos-s
 import { DateConverter } from 'src/shared/converters/date-converte';
 
 @Injectable()
-export class GetLastMomentOfflineListUseCase {
+export class GetWayosLastOfflineMomentListUseCase {
     private readonly DAYS_RANGE = 15;
 
     constructor(

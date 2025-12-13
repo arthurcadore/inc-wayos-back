@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IncCloudResponseBase, ShopDevice } from '../dto/inccloud-response.dto';
+import { IncCloudResponseBase, RegionDevice, ShopDevice } from '../dto/inccloud-response.dto';
 import { IncCloudServiceInterface } from '../interfaces/inccloud-service.interface';
 import axios, { AxiosInstance } from 'axios';
 import axiosRetry from 'axios-retry';
@@ -72,12 +72,12 @@ export class IncCloudService implements IncCloudServiceInterface {
         }
     }
 
-    async getRegionDevices1(sn: string, start: number, size: number): Promise<any> {
+    async getRegionDevices1(sn: string, start: number, size: number): Promise<IncCloudResponseBase<RegionDevice>> {
         try {
             console.log(`[IncCloud] Iniciando requisição para: ${this.baseUrl}/regiondevices1`);
             const startTime = Date.now();
 
-            const response = await this.axiosInstance.request<any>({
+            const response = await this.axiosInstance.request<IncCloudResponseBase<RegionDevice>>({
                 method: 'POST',
                 url: `${this.baseUrl}/regiondevices1?user_name=${this.userName}&locale=en`,
                 headers: {
@@ -104,8 +104,35 @@ export class IncCloudService implements IncCloudServiceInterface {
 
             return response.data;
         } catch (error) {
-            this.parseError(error);
+            return this.parseError(error);
         }
+    }
+
+    async getRegionDevices1AllPages(sn: string): Promise<RegionDevice[]> {
+        const pageSize = 10;
+        const regionDevices: RegionDevice[] = [];
+
+        console.log(`[IncCloud] Iniciando obtenção de todos os dispositivos regionais para SN: ${sn}`);
+        const startTime = Date.now();
+
+        while (true) {
+            const response = await this.getRegionDevices1(sn, Math.floor(regionDevices.length / pageSize) + 1, pageSize);
+
+            if (response.code !== 0) {
+                throw new Error(response.message || 'Internal Server Error');
+            }
+
+            regionDevices.push(...response.data.data);
+
+            if (regionDevices.length >= response.data.rowCount) {
+                break;
+            }
+        }
+
+        const endTime = Date.now();
+        console.log(`[IncCloud] Obtenção completada em ${PerformanceLogger.formatDuration(endTime - startTime)}`);
+
+        return regionDevices;
     }
 
     private parseError(error: any): any {
