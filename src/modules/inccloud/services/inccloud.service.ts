@@ -53,6 +53,7 @@ export class IncCloudService implements IncCloudServiceInterface {
 
             const response = await this.axiosInstance.request<IncCloudResponseBase<ShopDevice>>({
                 method: 'POST',
+                maxBodyLength: Infinity,
                 url: `${this.baseUrl}/shop/device/page?user_name=${this.userName}&locale=en`,
                 headers: {
                     'accept': 'application/json',
@@ -67,20 +68,7 @@ export class IncCloudService implements IncCloudServiceInterface {
 
             return response.data.data.data;
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.error(`[IncCloud] Erro na requisição:`, {
-                    message: error.message,
-                    code: error.code,
-                    status: error.response?.status,
-                });
-                throw new HttpException(
-                    error.response?.data || error.message || 'Internal Server Error',
-                    error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR
-                );
-            } else {
-                console.error(`[IncCloud] Erro desconhecido:`, error);
-                throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            return this.parseError(error);
         }
     }
 
@@ -116,20 +104,24 @@ export class IncCloudService implements IncCloudServiceInterface {
 
             return response.data;
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.error(`[IncCloud] Erro na requisição:`, {
-                    message: error.message,
-                    code: error.code,
-                    status: error.response?.status,
-                });
-                throw new HttpException(
-                    error.response?.data || error.message || 'Internal Server Error',
-                    error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR
-                );
-            } else {
-                console.error(`[IncCloud] Erro desconhecido:`, error);
-                throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            this.parseError(error);
+        }
+    }
+
+    private parseError(error: any): any {
+        if (axios.isAxiosError(error)) {
+            console.error(`[IncCloud] Erro na requisição:`, {
+                message: error.message,
+                code: error.code,
+                status: error.response?.status,
+            });
+            throw new HttpException(
+                error.response?.data || error.message || 'Internal Server Error',
+                error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        } else {
+            console.error(`[IncCloud] Erro desconhecido:`, error);
+            throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
