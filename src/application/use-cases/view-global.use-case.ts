@@ -53,33 +53,18 @@ export class ViewGlobalUseCase {
     }
 
     async getWayosUserScenes(): Promise<void> {
-        while (true) {
-            const response = await this.wayosService.getUserSceneList(Math.floor(this.wayosRouterInfos.length / this.WAYOS_PAGE_SIZE) + 1, this.WAYOS_PAGE_SIZE);
+        const userScenes = await this.wayosService.getUserSceneListAllPages();
 
-            if (response.code !== 0) {
-                throw new HttpException(response.msg || 'Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
-            console.log('Fetched Wayos User Scenes:', response.data.list.length);
-
-
-            this.wayosRouterInfos.push(
-                ...response.data.list.map((item) => ({
-                    inep: item.scene.name,
-                    sceneId: item.scene_id,
-                    sn: item.scene.sn,
-                    model: null,
-                    wanIp: null,
-                    lanIp: null,
-                    lanMac: null,
-                    online: false,
-                }))
-            );
-
-            if (this.wayosRouterInfos.length >= response.data.total) {
-                break;
-            }
-        }
+        this.wayosRouterInfos = userScenes.map((item) => ({
+            inep: item.scene.name,
+            sceneId: item.scene_id,
+            sn: item.scene.sn,
+            model: null,
+            wanIp: null,
+            lanIp: null,
+            lanMac: null,
+            online: false,
+        }));
 
         PerformanceLogger.logDataSize(this.wayosRouterInfos, 'WayOS Router');
     }

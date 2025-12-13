@@ -5,6 +5,7 @@ import {
     WayosAlarmLogResponse,
     WayosGetDeviceInfoResponse,
     WayosGetDeviceOnlineUserResponse,
+    WayosGetUserSceneListItem,
     WayosGetUserSceneListResponse,
 } from '../dto/wayos-response.dto';
 import { WayosServiceInterface } from '../interfaces/wayos-service.interface';
@@ -80,6 +81,33 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
         } catch (error) {
             return this.parseError(error);
         }
+    }
+
+    async getUserSceneListAllPages(): Promise<WayosGetUserSceneListItem[]> {
+        const pageSize = 1000;
+        const userScenes: WayosGetUserSceneListItem[] = [];
+
+        console.log(`[Wayos] Iniciando recuperação de todas as cenas de usuário`);
+        const startTime = Date.now();
+
+        while (true) {
+            const response = await this.getUserSceneList(Math.floor(userScenes.length / pageSize) + 1, pageSize);
+
+            if (response.code !== 0) {
+                throw new Error(response.msg || 'Internal Server Error');
+            }
+
+            userScenes.push(...response.data.list);
+
+            if (userScenes.length >= response.data.total) {
+                break;
+            }
+        }
+
+        const endTime = Date.now();
+        console.log(`[Wayos] Recuperação completada em ${PerformanceLogger.formatDuration(endTime - startTime)}. Total de cenas recuperadas: ${userScenes.length}`);
+
+        return userScenes;
     }
 
     async getDeviceInfo(sn: string): Promise<WayosGetDeviceInfoResponse> {
@@ -200,7 +228,6 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
         const startTime = Date.now();
 
         while (true) {
-
             const response = await this.getAlarmLogList(sceneId, Math.floor(alarmLogs.length / pageSize) + 1, pageSize, startAt, endAt);
 
             if (response.code !== 0) {
