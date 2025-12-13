@@ -6,7 +6,7 @@ import { DateConverter } from 'src/shared/converters/date-converte';
 
 @Injectable()
 export class GetWayosLastOfflineMomentListUseCase {
-    private readonly DAYS_RANGE = 15;
+    private readonly DAYS_RANGE = 30;
 
     constructor(
         @Inject(WAYOS_CONSTANTS.WAYOS_SERVICE)

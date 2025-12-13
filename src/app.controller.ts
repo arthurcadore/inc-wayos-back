@@ -7,7 +7,7 @@ import { ConnectedDevicesUseCase } from './application/use-cases/connected-devic
 import { GetAlarmLogListUseCase } from './application/use-cases/get-alarm-log-list.use-case';
 import * as data from './view-global-response.json';
 import { delay } from './shared/utils/delay';
-import { GetWayosLastOfflineMomentListUseCase } from './application/use-cases/get-last-moment-offline-list.use-case';
+import { GetWayosLastOfflineMomentListUseCase } from './application/use-cases/get-wayos-last-offline-moment-list.use-case.ts';
 
 interface HealthCheckResponse {
     message: string;
