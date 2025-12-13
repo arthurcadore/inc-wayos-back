@@ -10,7 +10,6 @@ export interface WayosRouterInfo {
 }
 
 export interface IncCloudDevice {
-    shopId: number;
     devType: string;
     sn: string;
     online: boolean;

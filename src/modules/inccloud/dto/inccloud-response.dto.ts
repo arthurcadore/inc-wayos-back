@@ -1,4 +1,4 @@
-export interface ShopDeviceItem {
+export interface ShopDevice {
     shopId: number;
     shopName: string;
     customType: string;
@@ -11,13 +11,13 @@ export interface ShopDeviceItem {
     devType: string;
 }
 
-export interface ShopDeviceData {
+export interface IncCloudDataBase<T> {
     rowCount: number;
-    data: ShopDeviceItem[];
+    data: T[];
 }
 
-export interface GetShopDevicePageResponse {
+export interface IncCloudResponseBase<T> {
     code: number;
     message: string;
-    data: ShopDeviceData;
+    data: IncCloudDataBase<T>;
 }

@@ -34,4 +34,15 @@ export class PerformanceLogger {
         const dataSize = this.dataSize(value);
         console.log(`Tamanho dos dados do ${name} recebidos: ${dataSize}`);
     }
+
+    /**
+     * @description Converte um valor de tempo em milissegundos para um formato legível em minutos e segundos.
+     * @param duration Tempo em milissegundos.
+     * @returns Uma string representando o tempo em minutos e segundos.
+     */
+    public static formatDuration(duration: number): string {
+        const minutes = Math.floor(duration / 60000);
+        const seconds = ((duration % 60000) / 1000).toFixed(0);
+        return `${minutes} minutos e ${seconds} segundos`;
+    }
 }

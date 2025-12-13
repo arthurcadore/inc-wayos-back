@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { ShopDeviceData } from 'src/modules/inccloud/dto/inccloud-response.dto';
+import { ShopDevice } from 'src/modules/inccloud/dto/inccloud-response.dto';
 import { INC_CLOUD_CONSTANTS } from 'src/modules/inccloud/inc-cloud.constants';
 import type { IncCloudServiceInterface } from 'src/modules/inccloud/interfaces/inccloud-service.interface';
 import type { WayosServiceInterface } from 'src/modules/wayos/interfaces/wayos-service.interface';
@@ -13,7 +13,7 @@ export class ViewGlobalUseCase {
 
     private viewGlobalItems: ViewGlobalItem[] = [];
     private wayosRouterInfos: WayosRouterInfo[] = [];
-    private shopDeviceData: ShopDeviceData;
+    private shopDevices: ShopDevice[] = [];
 
     constructor(
         @Inject(WAYOS_CONSTANTS.WAYOS_SERVICE)
@@ -30,27 +30,26 @@ export class ViewGlobalUseCase {
         await this.getWayosDeviceInfos();
         this.parseDeviceItems();
         const endTime = Date.now();
-        console.log(`Duração total da operação: ${endTime - startTime} ms`);
+        console.log(`Duração total da operação: ${PerformanceLogger.formatDuration(endTime - startTime)}`);
         return this.parseOutput();
     }
 
     private initializeProperties(): void {
         this.viewGlobalItems = [];
         this.wayosRouterInfos = [];
-        this.shopDeviceData = null as any;
+        this.shopDevices = [];
     }
 
     private adjustShopName(): void {
-        for (const item of this.shopDeviceData.data) {
+        for (const item of this.shopDevices) {
             item.shopName = item.shopName.replaceAll(' ', '').toUpperCase();
         }
     }
 
     async getIncCloudDevices(): Promise<void> {
-        const response = await this.incCloudService.getShopDevicePage();
-        this.shopDeviceData = response.data;
+        this.shopDevices = await this.incCloudService.getShopDevicePage();
         this.adjustShopName();
-        PerformanceLogger.logDataSize(this.shopDeviceData, 'IncCloud Shop Device Data');
+        PerformanceLogger.logDataSize(this.shopDevices, 'IncCloud Shop Device Data');
     }
 
     async getWayosUserScenes(): Promise<void> {
@@ -128,9 +127,8 @@ export class ViewGlobalUseCase {
         // Agrupar shopDeviceItems por shopName (INEP)
         const groupedDevicesByInep: Record<string, IncCloudDevice[]> = {};
 
-        for (const item of this.shopDeviceData.data) {
+        for (const item of this.shopDevices) {
             const device: IncCloudDevice = {
-                shopId: item.shopId,
                 devType: item.devType,
                 sn: item.devSn,
                 online: item.status === 1,

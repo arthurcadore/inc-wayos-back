@@ -1,5 +1,5 @@
-import { GetShopDevicePageResponse } from '../dto/inccloud-response.dto';
+import { ShopDevice } from '../dto/inccloud-response.dto';
 
 export interface IncCloudServiceInterface {
-    getShopDevicePage(): Promise<GetShopDevicePageResponse>;
+    getShopDevicePage(): Promise<ShopDevice[]>
 }
