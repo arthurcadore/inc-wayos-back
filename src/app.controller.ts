@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, InternalServerErrorException, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { ViewGlobalUseCase } from './application/use-cases/view-global.use-case';
@@ -92,6 +92,39 @@ export class AppController {
     @ApiBearerAuth('access-token')
     @Get('alarm-logs/last-moment-offline/:sceneId')
     async getLastMomentOfflineList(@Param('sceneId') sceneId: number): Promise<any[]> {
+        // await delay(1500);
+        // return [
+        //     {
+        //         "id": "db3f8f93b5c3a4211c2039182838a2f379da728b",
+        //         "create_at": "2025-12-09 20:57:01",
+        //         "update_at": "2025-12-09 20:57:01",
+        //         "happen_at": "2025-12-09 20:57:01",
+        //         "scene_id": 149280,
+        //         "sn": "MWDM2600191WW",
+        //         "level": 3,
+        //         "type": "dev_offline",
+        //         "msg": "",
+        //         "status": 0,
+        //         "pushed": false
+        //     },
+        //     {
+        //         "id": "803158ea9b76a6e1f9dcd9d5054162077d86e3ce",
+        //         "create_at": "2025-12-09 19:54:01",
+        //         "update_at": "2025-12-09 19:54:01",
+        //         "happen_at": "2025-12-09 19:54:01",
+        //         "scene_id": 149280,
+        //         "sn": "MWDM2600191WW",
+        //         "level": 3,
+        //         "type": "dev_offline",
+        //         "msg": "",
+        //         "status": 0,
+        //         "pushed": false
+        //     }
+        // ]
+
+        // await delay(1500);
+        // throw new InternalServerErrorException('Simulated internal server error... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');
+
         return await this.getLastMomentOfflineListUseCase.execute(sceneId);
     }
 }
