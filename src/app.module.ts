@@ -10,7 +10,8 @@ import { UsersModule } from './modules/users/users.module';
 import { ViewGlobalUseCase } from './application/use-cases/view-global.use-case';
 import { ConnectedDevicesUseCase } from './application/use-cases/connected-devices.use-case';
 import { GetAlarmLogListUseCase } from './application/use-cases/get-alarm-log-list.use-case';
-import { GetWayosLastOfflineMomentListUseCase } from './application/use-cases/get-wayos-last-offline-moment-list.use-case.ts';
+import { GetWayosLastOfflineMomentListUseCase } from './application/use-cases/get-wayos-last-offline-moment-list.use-case';
+import { GetInccloudLastOfflineMomentListUseCase } from './application/use-cases/get-inccloud-last-offline-moment-list.use-case';
 
 @Module({
     imports: [
@@ -30,6 +31,7 @@ import { GetWayosLastOfflineMomentListUseCase } from './application/use-cases/ge
         ConnectedDevicesUseCase,
         GetAlarmLogListUseCase,
         GetWayosLastOfflineMomentListUseCase,
+        GetInccloudLastOfflineMomentListUseCase,
         AppService,
     ]
 })

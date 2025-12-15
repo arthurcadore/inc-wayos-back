@@ -1,4 +1,4 @@
-import { Controller, Get, InternalServerErrorException, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, InternalServerErrorException, Param, Response, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { ViewGlobalUseCase } from './application/use-cases/view-global.use-case';
@@ -7,7 +7,8 @@ import { ConnectedDevicesUseCase } from './application/use-cases/connected-devic
 import { GetAlarmLogListUseCase } from './application/use-cases/get-alarm-log-list.use-case';
 import * as data from './view-global-response.json';
 import { delay } from './shared/utils/delay';
-import { GetWayosLastOfflineMomentListUseCase } from './application/use-cases/get-wayos-last-offline-moment-list.use-case.ts';
+import { GetWayosLastOfflineMomentListUseCase } from './application/use-cases/get-wayos-last-offline-moment-list.use-case';
+import { GetInccloudLastOfflineMomentListUseCase } from './application/use-cases/get-inccloud-last-offline-moment-list.use-case';
 
 interface HealthCheckResponse {
     message: string;
@@ -25,6 +26,7 @@ export class AppController {
         private readonly connectedDevicesUseCase: ConnectedDevicesUseCase,
         private readonly getAlarmLogListUseCase: GetAlarmLogListUseCase,
         private readonly getWayosLastOfflineMomentListUseCase: GetWayosLastOfflineMomentListUseCase,
+        private readonly getInccloudLastOfflineMomentListUseCase: GetInccloudLastOfflineMomentListUseCase,
     ) {}
 
     @Get()
@@ -68,9 +70,9 @@ export class AppController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('access-token')
     @Get('view-global')
-    async getWayosHealthCheck(): Promise<any> {
+    async getWayosHealthCheck(@Response() res: any): Promise<any> {
         // await delay(2500);
-        // return data;
+        // res.status(200).json(data);
         return await this.viewGlobalUseCase.execute();
     }
 
@@ -132,7 +134,6 @@ export class AppController {
     @ApiBearerAuth('access-token')
     @Get('inccloud-last-offline-moment-list/:sn')
     async getIncCloudLastOfflineMomentList(@Param('sn') sn: string): Promise<any[]> {
-        // Implementation for IncCloud last offline moment list goes here
-        return [];
+        return await this.getInccloudLastOfflineMomentListUseCase.execute(sn);
     }
 }
