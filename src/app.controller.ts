@@ -73,7 +73,8 @@ export class AppController {
     async getWayosHealthCheck(@Response() res: any): Promise<any> {
         // await delay(2500);
         // res.status(200).json(data);
-        return await this.viewGlobalUseCase.execute();
+        const response = await this.viewGlobalUseCase.execute();
+        res.status(200).json(response);
     }
 
     @UseGuards(JwtAuthGuard)
