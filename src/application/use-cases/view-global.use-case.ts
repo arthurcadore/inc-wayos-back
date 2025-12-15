@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { ShopDevice } from 'src/modules/inccloud/dto/inccloud-response.dto';
+import { RegionDevice, ShopDevice } from 'src/modules/inccloud/dto/inccloud-response.dto';
 import { INC_CLOUD_CONSTANTS } from 'src/modules/inccloud/inc-cloud.constants';
 import type { IncCloudServiceInterface } from 'src/modules/inccloud/interfaces/inccloud-service.interface';
 import type { WayosServiceInterface } from 'src/modules/wayos/interfaces/wayos-service.interface';
@@ -29,6 +29,7 @@ export class ViewGlobalUseCase {
         await this.getWayosUserScenes();
         await this.getWayosDeviceInfos();
         this.parseDeviceItems();
+        await this.updateRegionName();
         const endTime = Date.now();
         console.log(`Duração total da operação: ${PerformanceLogger.formatDuration(endTime - startTime)}`);
         return this.parseOutput();
@@ -99,6 +100,7 @@ export class ViewGlobalUseCase {
         this.viewGlobalItems.push(
             ...this.wayosRouterInfos.map((item) => ({
                 inep: item.inep,
+                city: 'n/d',
                 router: item,
                 switches: [],
                 aps: [],
@@ -143,6 +145,27 @@ export class ViewGlobalUseCase {
         }
 
         PerformanceLogger.logDataSize(this.viewGlobalItems, 'View Global Items after IncCloud');
+    }
+
+    async updateRegionName(): Promise<void> {
+        const regionDevices = await this.incCloudService.getRegionDevices1AllPages('');
+        const groupedRegionDevicesByInep: Record<string, string> = {};
+
+        for (const device of regionDevices) {
+            device.shopName = device.shopName.replaceAll(' ', '').toUpperCase();
+
+            if (!groupedRegionDevicesByInep[device.shopName]) {
+                groupedRegionDevicesByInep[device.shopName] = device.regionName;
+            }
+        }
+
+        for (const inep in groupedRegionDevicesByInep) {
+            const targetItem = this.viewGlobalItems.find((item) => item.inep === inep);
+
+            if (targetItem) {
+                targetItem.city = groupedRegionDevicesByInep[inep];
+            }
+        }
     }
 
     parseOutput(): ViewGlobalUseCaseOutput {

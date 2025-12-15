@@ -109,7 +109,7 @@ export class IncCloudService implements IncCloudServiceInterface {
     }
 
     async getRegionDevices1AllPages(sn: string): Promise<RegionDevice[]> {
-        const pageSize = 10;
+        const pageSize = 300;
         const regionDevices: RegionDevice[] = [];
 
         console.log(`[IncCloud] Iniciando obtenção de todos os dispositivos regionais para SN: ${sn}`);
