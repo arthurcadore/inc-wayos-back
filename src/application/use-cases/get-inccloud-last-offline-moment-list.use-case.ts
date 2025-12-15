@@ -15,8 +15,8 @@ export class GetInccloudLastOfflineMomentListUseCase {
     async execute(sn: string): Promise<RegionDevice[]> {
         const offlineMoments = await this.inccloudService.getRegionDevices1AllPages(sn);
         const filteredOfflineMoments = offlineMoments
-            .filter(device => device.offlineTimeStr.length > 0)
-            .sort((a, b) => new Date(b.offlineTimeStr).getTime() - new Date(a.offlineTimeStr).getTime());
+            .filter(device => device.offlineTime)
+            .sort((a, b) => new Date(b.offlineTime).getTime() - new Date(a.offlineTime).getTime());
         return filteredOfflineMoments;
     }
 }

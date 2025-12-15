@@ -18,6 +18,13 @@ export class GetWayosLastOfflineMomentListUseCase {
         const alarmLogs = await this.wayosService.getAlarmLogListAllPages(sceneId, startAt, endAt);
         const filteredLogs = alarmLogs.filter(log => log.type === WayosAlarmType.DEV_OFFLINE)
         filteredLogs.sort((a, b) => new Date(b.happen_at).getTime() - new Date(a.happen_at).getTime());
+
+        // Conforme alinhamento com Gabriel Steffens (15/12/2025), deve retornar apenas o último registro (mais recente).
+        // Motivo: seguir um padrão similar ao do IncCloud que hoje retorna apenas o último offline.
+        if (filteredLogs.length > 0) {
+            return [filteredLogs.at(0)!];
+        }
+
         return filteredLogs;
     }
 }
