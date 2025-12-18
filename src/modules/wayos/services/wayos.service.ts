@@ -28,7 +28,7 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
 
         // Cria instância dedicada do axios
         this.axiosInstance = axios.create({
-            timeout: 5000, // 5 segundos
+            timeout: 15000, // 15 segundos
             maxBodyLength: Infinity,
         });
 
