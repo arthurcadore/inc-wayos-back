@@ -75,7 +75,7 @@ export class AppController {
     @ApiBearerAuth('access-token')
     @Get('view-global')
     async getWayosHealthCheck(@Response() res: any): Promise<any> {
-        // await delay(2500);
+        // await delay(1500);
         // res.status(200).json(data);
         const response = await this.viewGlobalUseCase.execute();
         res.status(200).json(response);

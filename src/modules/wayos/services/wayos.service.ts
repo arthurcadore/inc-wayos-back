@@ -86,7 +86,7 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
     }
 
     async getUserSceneListSummeriredAllPages(): Promise<WayosGetUserSceneSummeriredItem[]> {
-        const pageSize = 1000;
+        const pageSize = 1500;
         const devices: WayosGetUserSceneSummeriredItem[] = [];
 
         console.log(`[Wayos] Iniciando recuperação de todos os dispositivos resumidos`);

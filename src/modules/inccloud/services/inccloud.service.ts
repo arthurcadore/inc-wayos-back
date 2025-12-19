@@ -26,7 +26,7 @@ export class IncCloudService implements IncCloudServiceInterface {
 
         // Cria instância dedicada do axios
         this.axiosInstance = axios.create({
-            timeout: 5000, // 5 segundos
+            timeout: 15000, // 15 segundos
             maxBodyLength: Infinity,
         });
 
@@ -109,7 +109,7 @@ export class IncCloudService implements IncCloudServiceInterface {
     }
 
     async getRegionDevices1AllPages(sn: string): Promise<RegionDevice[]> {
-        const pageSize = 300;
+        const pageSize = 1000;
         const regionDevices: RegionDevice[] = [];
 
         console.log(`[IncCloud] Iniciando obtenção de todos os dispositivos regionais para SN: ${sn}`);

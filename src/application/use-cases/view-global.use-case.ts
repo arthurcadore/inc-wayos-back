@@ -26,8 +26,9 @@ export class ViewGlobalUseCase {
         const startTime = Date.now();
         this.initializeProperties();
         await this.getIncCloudDevices();
-        await this.getWayosUserScenes();
-        await this.getWayosDeviceInfos();
+        await this.getWayosUserScenesSummarired();
+        // await this.getWayosUserScenes();
+        // await this.getWayosDeviceInfos();
         this.parseDeviceItems();
         await this.updateRegionName();
         const endTime = Date.now();
@@ -58,6 +59,44 @@ export class ViewGlobalUseCase {
         PerformanceLogger.logDataSize(this.shopDevices, 'IncCloud Shop Device Data');
     }
 
+    async getWayosUserScenesSummarired(): Promise<void> {
+        let userScenes = await this.wayosService.getUserSceneListSummeriredAllPages();
+
+        // Normalizar scene.name
+        for (const item of userScenes) {
+            item.scene.name = item.scene.name.replaceAll(' ', '').toUpperCase();
+        }
+
+        const regex = /^INEP-\d{8}$/;
+        userScenes = userScenes.filter(item => regex.test(item.scene.name));
+
+        this.wayosRouterInfos = userScenes.map((item) => ({
+            inep: item.scene.name,
+            sceneId: item.scene_id,
+            sn: item.scene.sn,
+            model: item.model,
+            wanIp: item.wan_ip,
+            lanIp: item.lan_ip,
+            lanMac: item.lan_mac,
+            online: item.online,
+        }));
+
+        this.viewGlobalItems.push(
+            ...this.wayosRouterInfos.map((item) => ({
+                inep: item.inep,
+                city: 'n/d',
+                router: item,
+                switches: [],
+                aps: [],
+            }))
+        );
+
+        PerformanceLogger.logDataSize(this.wayosRouterInfos, 'WayOS Router Summarired');
+    }
+
+    /**
+     * @deprecated Use getWayosUserScenesSummarired instead
+     */
     async getWayosUserScenes(): Promise<void> {
         let userScenes = await this.wayosService.getUserSceneListAllPages();
 
@@ -89,6 +128,9 @@ export class ViewGlobalUseCase {
         PerformanceLogger.logDataSize(this.wayosRouterInfos, 'WayOS Router');
     }
 
+    /**
+     * @deprecated Use getWayosUserScenesSummarired instead
+     */
     async getWayosDeviceInfos(): Promise<void> {
         const concurrency = 100; // Number of concurrent requests
         const tasks = this.wayosRouterInfos.map((scene) => async () => {
