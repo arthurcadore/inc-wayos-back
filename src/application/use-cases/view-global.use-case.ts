@@ -41,45 +41,62 @@ export class ViewGlobalUseCase {
         this.shopDevices = [];
     }
 
-    private adjustShopName(): void {
+    async getIncCloudDevices(): Promise<void> {
+        this.shopDevices = await this.incCloudService.getShopDevicePage();
+
+        // Normalizar shopName
         for (const item of this.shopDevices) {
             item.shopName = item.shopName.replaceAll(' ', '').toUpperCase();
         }
-    }
 
-    async getIncCloudDevices(): Promise<void> {
-        this.shopDevices = await this.incCloudService.getShopDevicePage();
-        this.adjustShopName();
+        // Filtrar shopDevices com shopName que correspondem ao padrão INEP-XXXXXXXX
+        this.shopDevices = this.shopDevices.filter((item) => {
+            const regex = /^INEP-\d{8}$/;
+            return regex.test(item.shopName);
+        });
+
         PerformanceLogger.logDataSize(this.shopDevices, 'IncCloud Shop Device Data');
     }
 
     async getWayosUserScenes(): Promise<void> {
-        const userScenes = await this.wayosService.getUserSceneListAllPages();
+        let userScenes = await this.wayosService.getUserSceneListAllPages();
 
-        this.wayosRouterInfos = userScenes.map((item) => ({
-            inep: item.scene.name,
-            sceneId: item.scene_id,
-            sn: item.scene.sn,
-            model: null,
-            wanIp: null,
-            lanIp: null,
-            lanMac: null,
-            online: false,
-        }));
+        // Normalizar scene.name
+        for (const item of userScenes) {
+            item.scene.name = item.scene.name.replaceAll(' ', '').toUpperCase();
+        }
+
+        const regex = /^INEP-\d{8}$/;
+
+        // const ineps = userScenes.map(item => item.scene.name);
+        // const uniqueIneps = Array.from(new Set(ineps));
+        // const filteredIneps = uniqueIneps.filter(inep => !regex.test(inep));
+
+        this.wayosRouterInfos = userScenes
+            // Filtrar cenas com nomes que correspondem ao padrão INEP-XXXXXXXX
+            .filter(item => regex.test(item.scene.name))
+            .map((item) => ({
+                inep: item.scene.name,
+                sceneId: item.scene_id,
+                sn: item.scene.sn,
+                model: null,
+                wanIp: null,
+                lanIp: null,
+                lanMac: null,
+                online: false,
+            }));
 
         PerformanceLogger.logDataSize(this.wayosRouterInfos, 'WayOS Router');
     }
 
     async getWayosDeviceInfos(): Promise<void> {
-        const concurrency = 50; // Number of concurrent requests
+        const concurrency = 100; // Number of concurrent requests
         const tasks = this.wayosRouterInfos.map((scene) => async () => {
             const response = await this.wayosService.getDeviceInfo(scene.sn);
 
             if (response.code !== 0) {
                 throw new HttpException(response.msg || 'Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
             }
-
-            // console.log('Fetched Wayos Device Info:', response.data.sn);
 
             this.wayosRouterInfos = this.wayosRouterInfos.map((routerInfo) => {
                 if (routerInfo.sn === response.data.sn) {

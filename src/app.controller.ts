@@ -1,4 +1,4 @@
-import { Controller, Get, InternalServerErrorException, Param, Response, UseGuards } from '@nestjs/common';
+import { Controller, Get, Inject, Param, Response, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { ViewGlobalUseCase } from './application/use-cases/view-global.use-case';
@@ -9,6 +9,8 @@ import * as data from './view-global-response.json';
 import { delay } from './shared/utils/delay';
 import { GetWayosLastOfflineMomentListUseCase } from './application/use-cases/get-wayos-last-offline-moment-list.use-case';
 import { GetInccloudLastOfflineMomentListUseCase } from './application/use-cases/get-inccloud-last-offline-moment-list.use-case';
+import type { WayosServiceInterface } from './modules/wayos/interfaces/wayos-service.interface';
+import { WAYOS_CONSTANTS } from './modules/wayos/wayos.constants';
 
 interface HealthCheckResponse {
     message: string;
@@ -27,6 +29,8 @@ export class AppController {
         private readonly getAlarmLogListUseCase: GetAlarmLogListUseCase,
         private readonly getWayosLastOfflineMomentListUseCase: GetWayosLastOfflineMomentListUseCase,
         private readonly getInccloudLastOfflineMomentListUseCase: GetInccloudLastOfflineMomentListUseCase,
+        @Inject(WAYOS_CONSTANTS.WAYOS_SERVICE)
+        private readonly wayosService: WayosServiceInterface
     ) {}
 
     @Get()
@@ -71,10 +75,10 @@ export class AppController {
     @ApiBearerAuth('access-token')
     @Get('view-global')
     async getWayosHealthCheck(@Response() res: any): Promise<any> {
-        // await delay(2500);
-        // res.status(200).json(data);
-        const response = await this.viewGlobalUseCase.execute();
-        res.status(200).json(response);
+        await delay(2500);
+        res.status(200).json(data);
+        // const response = await this.viewGlobalUseCase.execute();
+        // res.status(200).json(response);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -95,39 +99,6 @@ export class AppController {
     @ApiBearerAuth('access-token')
     @Get('wayos-last-offline-moment-list/:sceneId')
     async getWayosLastOfflineMomentList(@Param('sceneId') sceneId: number): Promise<any[]> {
-        // await delay(1500);
-        // return [
-        //     {
-        //         "id": "db3f8f93b5c3a4211c2039182838a2f379da728b",
-        //         "create_at": "2025-12-09 20:57:01",
-        //         "update_at": "2025-12-09 20:57:01",
-        //         "happen_at": "2025-12-09 20:57:01",
-        //         "scene_id": 149280,
-        //         "sn": "MWDM2600191WW",
-        //         "level": 3,
-        //         "type": "dev_offline",
-        //         "msg": "",
-        //         "status": 0,
-        //         "pushed": false
-        //     },
-        //     {
-        //         "id": "803158ea9b76a6e1f9dcd9d5054162077d86e3ce",
-        //         "create_at": "2025-12-09 19:54:01",
-        //         "update_at": "2025-12-09 19:54:01",
-        //         "happen_at": "2025-12-09 19:54:01",
-        //         "scene_id": 149280,
-        //         "sn": "MWDM2600191WW",
-        //         "level": 3,
-        //         "type": "dev_offline",
-        //         "msg": "",
-        //         "status": 0,
-        //         "pushed": false
-        //     }
-        // ]
-
-        // await delay(1500);
-        // throw new InternalServerErrorException('Simulated internal server error... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');
-
         return await this.getWayosLastOfflineMomentListUseCase.execute(sceneId);
     }
 
@@ -136,5 +107,12 @@ export class AppController {
     @Get('inccloud-last-offline-moment-list/:sn')
     async getIncCloudLastOfflineMomentList(@Param('sn') sn: string): Promise<any[]> {
         return await this.getInccloudLastOfflineMomentListUseCase.execute(sn);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @Get('wayos-user-scene-list-summerired')
+    async getUserSceneListSummeriredAllPages(): Promise<any[]> {
+        return  this.wayosService.getUserSceneListSummeriredAllPages();
     }
 }

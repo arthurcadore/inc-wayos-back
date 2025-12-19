@@ -5,9 +5,13 @@ import {
     WayosGetDeviceOnlineUserResponse,
     WayosGetUserSceneListItem,
     WayosGetUserSceneListResponse,
+    WayosGetUserSceneListSummeriredResponse,
+    WayosGetUserSceneSummeriredItem,
 } from '../dto/wayos-response.dto';
 
 export interface WayosServiceInterface {
+    getUserSceneListSummerired(page: number, limit: number): Promise<WayosGetUserSceneListSummeriredResponse>;
+    getUserSceneListSummeriredAllPages(): Promise<WayosGetUserSceneSummeriredItem[]>;
     getUserSceneList(page: number, limit: number): Promise<WayosGetUserSceneListResponse>;
     getUserSceneListAllPages(): Promise<WayosGetUserSceneListItem[]>;
     getDeviceInfo(sn: string): Promise<WayosGetDeviceInfoResponse>;

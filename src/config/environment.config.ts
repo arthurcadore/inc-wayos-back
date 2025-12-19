@@ -79,6 +79,6 @@ export function validateEnvironment(config: Record<string, unknown>): Environmen
         WAYOS_ACCESS_KEY_ID: config.WAYOS_ACCESS_KEY_ID as string,
         WAYOS_ACCESS_KEY_SECRET: config.WAYOS_ACCESS_KEY_SECRET as string,
         JWT_SECRET: config.JWT_SECRET as string,
-        JWT_EXPIRES_IN: (config.JWT_EXPIRES_IN as string) || '24h'
+        JWT_EXPIRES_IN: (config.JWT_EXPIRES_IN as string),
     };
 }

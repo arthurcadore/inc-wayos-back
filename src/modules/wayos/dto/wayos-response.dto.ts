@@ -113,3 +113,60 @@ export interface WayosAlarmLogResponse {
     msg: string;
     data: WayosAlarmLogData;
 }
+
+export interface WayosGetUserSceneSummeriredItem {
+    id: number;
+    create_at: string;
+    update_at: string;
+    login_at: string;
+    logout_at: string;
+    parent_id: number;
+    scene_id: number;
+    sn: string;
+    name: string;
+    online: boolean;
+    type: number;
+    svn: number;
+    psvn: number;
+    model: string;
+    plat: string;
+    sversion: string;
+    start_at: number;
+    wan_mac: string;
+    lan_mac: string;
+    wan_ip: string;
+    lan_ip: string;
+    public_ip: string;
+    region: string;
+    http_port: number;
+    telnet_port: number;
+    remark: string;
+    alone: boolean;
+    ui: number;
+    third: boolean;
+    group_id: number;
+    acs_template: number;
+    simet_label: string;
+    sort_weight: number;
+    latest_firmware: {
+        id: number;
+        from: number;
+        model: string;
+        sversion: string;
+        svn: number;
+        ui: number;
+    } | null;
+    group: any;
+    scene: WayosUserScene;
+}
+
+export interface WayosGetUserSceneSummeriredData {
+    total: number;
+    list: WayosGetUserSceneSummeriredItem[];
+}
+
+export interface WayosGetUserSceneListSummeriredResponse {
+    code: number;
+    msg: string;
+    data: WayosGetUserSceneSummeriredData;
+}

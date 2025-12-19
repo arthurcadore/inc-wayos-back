@@ -7,6 +7,8 @@ import {
     WayosGetDeviceOnlineUserResponse,
     WayosGetUserSceneListItem,
     WayosGetUserSceneListResponse,
+    WayosGetUserSceneListSummeriredResponse,
+    WayosGetUserSceneSummeriredItem,
 } from '../dto/wayos-response.dto';
 import { WayosServiceInterface } from '../interfaces/wayos-service.interface';
 import { WayosBaseService } from './wayos-base.service';
@@ -46,6 +48,68 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
                 console.log(`[Wayos] Tentativa ${retryCount} após erro: ${error.message}`);
             }
         });
+    }
+
+    async getUserSceneListSummerired(page: number, limit: number): Promise<WayosGetUserSceneListSummeriredResponse> {
+        try {
+            console.log(`[Wayos] Iniciando requisição para: ${this.baseUrl}/open-api/v1/device/list`);
+            const startTime = Date.now();
+
+            const body = {
+                request_id: this.generateRequestId(),
+                page,
+                limit,
+            };
+            const timestamp = this.getTimestamp();
+            const signature = this.buildSignature(timestamp, body);
+            const headers = {
+                'Content-Type': 'application/json',
+                'X-App-Id': this.appId,
+                'X-Timestamp': timestamp,
+                'X-Signature': signature
+            };
+            const response = await this.axiosInstance.request<WayosGetUserSceneListSummeriredResponse>({
+                method: 'POST',
+                maxBodyLength: Infinity,
+                url: `${this.baseUrl}/open-api/v1/device/list`,
+                headers,
+                data: body,
+            });
+
+            const endTime = Date.now();
+            console.log(`[Wayos] Requisição completada em ${PerformanceLogger.formatDuration(endTime - startTime)}`);
+
+            return response.data;
+        } catch (error) {
+            return this.parseError(error);
+        }
+    }
+
+    async getUserSceneListSummeriredAllPages(): Promise<WayosGetUserSceneSummeriredItem[]> {
+        const pageSize = 1000;
+        const devices: WayosGetUserSceneSummeriredItem[] = [];
+
+        console.log(`[Wayos] Iniciando recuperação de todos os dispositivos resumidos`);
+        const startTime = Date.now();
+
+        while (true) {
+            const response = await this.getUserSceneListSummerired(Math.floor(devices.length / pageSize) + 1, pageSize);
+
+            if (response.code !== 0) {
+                throw new Error(response.msg || 'Internal Server Error');
+            }
+
+            devices.push(...response.data.list);
+
+            if (devices.length >= response.data.total) {
+                break;
+            }
+        }
+
+        const endTime = Date.now();
+        console.log(`[Wayos] Recuperação completada em ${PerformanceLogger.formatDuration(endTime - startTime)}. Total de dispositivos recuperados: ${devices.length}`);
+
+        return devices;
     }
 
     async getUserSceneList(page: number, limit: number): Promise<WayosGetUserSceneListResponse> {
