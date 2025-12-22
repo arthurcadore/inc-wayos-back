@@ -16,7 +16,9 @@ export class GetWayosLastOfflineMomentListUseCase {
     async execute(sceneId: number): Promise<WayosAlarmLogItem[]> {
         const { startAt, endAt } = DateConverter.createRangeDates(this.DAYS_RANGE);
         const alarmLogs = await this.wayosService.getAlarmLogListAllPages(sceneId, startAt, endAt);
-        const filteredLogs = alarmLogs.filter(log => log.type === WayosAlarmType.DEV_OFFLINE)
+        const filteredLogs = alarmLogs
+            .filter(log => log.type === WayosAlarmType.DEV_OFFLINE)
+            .filter(log => log.happen_at !== null && log.happen_at !== undefined);
         filteredLogs.sort((a, b) => new Date(b.happen_at).getTime() - new Date(a.happen_at).getTime());
 
         // Conforme alinhamento com Gabriel Steffens (15/12/2025), deve retornar apenas o último registro (mais recente).
