@@ -35,6 +35,15 @@ export interface EnvironmentVariables {
     RATE_LIMIT_TTL: number;
     RATE_LIMIT_LIMIT: number;
 
+    // Database Configuration
+    DATABASE_HOST: string;
+    DATABASE_PORT: number;
+    DATABASE_USERNAME: string;
+    DATABASE_PASSWORD: string;
+    DATABASE_NAME: string;
+    DATABASE_SYNC: boolean;
+    DATABASE_LOGGING: boolean;
+
     // Inc Cloud Configuration
     INC_CLOUD_BASE_URL: string;
     INC_CLOUD_API_KEY: string;
@@ -72,6 +81,13 @@ export function validateEnvironment(config: Record<string, unknown>): Environmen
         LOG_FORMAT: config.LOG_FORMAT as 'combined' | 'json' | 'simple',
         RATE_LIMIT_TTL: parseInt(config.RATE_LIMIT_TTL as string, 10) || 60000,
         RATE_LIMIT_LIMIT: parseInt(config.RATE_LIMIT_LIMIT as string, 10) || 100,
+        DATABASE_HOST: config.DATABASE_HOST as string,
+        DATABASE_PORT: parseInt(config.DATABASE_PORT as string, 10) || 5432,
+        DATABASE_USERNAME: config.DATABASE_USERNAME as string,
+        DATABASE_PASSWORD: config.DATABASE_PASSWORD as string,
+        DATABASE_NAME: config.DATABASE_NAME as string,
+        DATABASE_SYNC: config.DATABASE_SYNC === 'true',
+        DATABASE_LOGGING: config.DATABASE_LOGGING === 'true',
         INC_CLOUD_BASE_URL: config.INC_CLOUD_BASE_URL as string,
         INC_CLOUD_API_KEY: config.INC_CLOUD_API_KEY as string,
         INC_CLOUD_USERNAME: config.INC_CLOUD_USERNAME as string,

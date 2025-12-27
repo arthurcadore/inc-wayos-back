@@ -27,7 +27,14 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:e2e:dev": "cross-env NODE_ENV=development jest --config ./test/jest-e2e.json",
-    "test:e2e:hml": "cross-env NODE_ENV=homologation jest --config ./test/jest-e2e.json"
+    "test:e2e:hml": "cross-env NODE_ENV=homologation jest --config ./test/jest-e2e.json",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:generate": "npm run typeorm -- migration:generate -d src/database/data-source.ts",
+    "migration:create": "npm run typeorm -- migration:create",
+    "migration:run": "npm run typeorm -- migration:run -d src/database/data-source.ts",
+    "migration:revert": "npm run typeorm -- migration:revert -d src/database/data-source.ts",
+    "migration:show": "npm run typeorm -- migration:show -d src/database/data-source.ts",
+    "seed:run": "ts-node src/database/seeds/create-admin-user.seed.ts"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",
@@ -38,6 +45,7 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.1",
+    "@nestjs/typeorm": "^11.0.0",
     "axios": "^1.13.2",
     "axios-retry": "^4.5.0",
     "bcrypt": "^6.0.0",
@@ -46,9 +54,11 @@
     "crypto-js": "^4.2.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

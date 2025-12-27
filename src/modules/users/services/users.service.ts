@@ -7,11 +7,11 @@ import { User } from '../entities/user.entity';
 export class UsersService implements UsersServiceInterface {
     constructor(private readonly usersRepository: UsersRepository) {}
 
-    async findByEmail(email: string): Promise<User | undefined> {
+    async findByEmail(email: string): Promise<User | null> {
         return this.usersRepository.findByEmail(email);
     }
 
-    async findById(id: string): Promise<User | undefined> {
+    async findById(id: string): Promise<User | null> {
         return this.usersRepository.findById(id);
     }
 }

@@ -1,1 +1,18 @@
- node_modules
+node_modules
+npm-debug.log
+dist
+coverage
+.env*
+!.env.example
+.git
+.gitignore
+*.md
+.vscode
+.idea
+test
+*.spec.ts
+*.test.ts
+.eslintrc.js
+.prettierrc
+docker-compose.yaml
+Dockerfile

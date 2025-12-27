@@ -1,29 +1,29 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
-export class UsersRepository implements OnModuleInit {
-    private users: Map<string, User> = new Map();
+export class UsersRepository {
+    constructor(
+        @InjectRepository(User)
+        private readonly repository: Repository<User>,
+    ) {}
 
-    async onModuleInit() {
-        // Initialize with default admin user
-        const adminPassword = await bcrypt.hash('e@ce123', 10);
-        const adminUser = new User({
-            id: '1',
-            email: 'admin@intelbras.com.br',
-            password: adminPassword,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-        this.users.set(adminUser.id, adminUser);
+    async findByEmail(email: string): Promise<User | null> {
+        return this.repository.findOne({ where: { email } });
     }
 
-    findByEmail(email: string): Promise<User | undefined> {
-        return Promise.resolve(Array.from(this.users.values()).find((u) => u.email === email));
+    async findById(id: string): Promise<User | null> {
+        return this.repository.findOne({ where: { id } });
     }
 
-    findById(id: string): Promise<User | undefined> {
-        return Promise.resolve(this.users.get(id));
+    async create(userData: Partial<User>): Promise<User> {
+        const user = this.repository.create(userData);
+        return this.repository.save(user);
+    }
+
+    async save(user: User): Promise<User> {
+        return this.repository.save(user);
     }
 }
