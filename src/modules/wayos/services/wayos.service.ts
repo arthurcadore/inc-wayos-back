@@ -204,11 +204,7 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
 
             return response.data;
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                throw new HttpException(error.response?.data || 'Internal Server Error', error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR);
-            } else {
-                throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            return this.parseError(error);
         }
     }
 

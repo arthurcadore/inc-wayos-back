@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { WayosGetDeviceOnlineUserResponse } from 'src/modules/wayos/dto/wayos-response.dto';
+import { WayosGetDeviceOnlineUser } from 'src/modules/wayos/dto/wayos-response.dto';
 import type { WayosServiceInterface } from 'src/modules/wayos/interfaces/wayos-service.interface';
 import { WAYOS_CONSTANTS } from 'src/modules/wayos/wayos.constants';
 
@@ -12,7 +12,8 @@ export class ConnectedDevicesUseCase {
         private readonly wayosService: WayosServiceInterface,
     ) {}
 
-    async execute(sn: string): Promise<WayosGetDeviceOnlineUserResponse> {
-        return await this.wayosService.getDeviceOnlineUser(sn);
+    async execute(sn: string): Promise<WayosGetDeviceOnlineUser[]> {
+        const response = await this.wayosService.getDeviceOnlineUser(sn);
+        return response.data.list || [];
     }
 }
