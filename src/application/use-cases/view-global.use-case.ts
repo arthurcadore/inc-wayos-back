@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { RegionDevice, ShopDevice } from 'src/modules/inccloud/dto/inccloud-response.dto';
+import { ShopDevice } from 'src/modules/inccloud/dto/inccloud-response.dto';
 import { INC_CLOUD_CONSTANTS } from 'src/modules/inccloud/inc-cloud.constants';
 import type { IncCloudServiceInterface } from 'src/modules/inccloud/interfaces/inccloud-service.interface';
 import type { WayosServiceInterface } from 'src/modules/wayos/interfaces/wayos-service.interface';
@@ -9,8 +9,6 @@ import { IncCloudDevice, ViewGlobalItem, ViewGlobalUseCaseOutput, WayosRouterInf
 
 @Injectable()
 export class ViewGlobalUseCase {
-    private readonly WAYOS_PAGE_SIZE = 1000;
-
     private viewGlobalItems: ViewGlobalItem[] = [];
     private wayosRouterInfos: WayosRouterInfo[] = [];
     private shopDevices: ShopDevice[] = [];
@@ -181,6 +179,7 @@ export class ViewGlobalUseCase {
                 onlineTime: item.onlineTime,
                 firstOnlineTime: item.firstOnlineTime,
                 aliasName: item.aliasName,
+                devIp: 'n/d',
             };
 
             const inep = item.shopName.replaceAll(' ', '').toUpperCase();
@@ -223,6 +222,20 @@ export class ViewGlobalUseCase {
 
             if (targetItem) {
                 targetItem.city = groupedRegionDevicesByInep[inep];
+
+                targetItem.switches.forEach((sw) => {
+                    const regionDevice = regionDevices.find(rd => rd.devSn === sw.sn);
+                    if (regionDevice) {
+                        sw.devIp = regionDevice.devIp;
+                    }
+                });
+
+                targetItem.aps.forEach((ap) => {
+                    const regionDevice = regionDevices.find(rd => rd.devSn === ap.sn);
+                    if (regionDevice) {
+                        ap.devIp = regionDevice.devIp;
+                    }
+                });
             }
         }
     }
