@@ -58,7 +58,7 @@ export interface WayosGetDeviceOnlineUser {
     auth_type: number;
     conn_type: number;
     down_flow: number;
-    ip: string;
+    ip:string;
     login_at: number;
     logout_at: number;
     mac: string;
@@ -72,15 +72,19 @@ export interface WayosGetDeviceOnlineUser {
     up_flow: number;
 }
 
-export interface WayosGetDeviceOnlineUserData {
-    total: number;
-    list: WayosGetDeviceOnlineUser[];
-}
-
 export interface WayosGetDeviceOnlineUserResponse {
     code: number;
     msg: string;
-    data: WayosGetDeviceOnlineUserData;
+    data: {
+        code: number;
+        data: {
+            list: WayosGetDeviceOnlineUser[];
+            total: number;
+        };
+        msg: string;
+        requies_id: string;
+        sequence_id: string;
+    };
 }
 
 export enum WayosAlarmType {
