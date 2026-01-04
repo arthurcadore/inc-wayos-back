@@ -13,6 +13,7 @@ import { ConnectedDevicesUseCase } from './application/use-cases/connected-devic
 import { GetAlarmLogListUseCase } from './application/use-cases/get-alarm-log-list.use-case';
 import { GetWayosLastOfflineMomentListUseCase } from './application/use-cases/get-wayos-last-offline-moment-list.use-case';
 import { GetInccloudLastOfflineMomentListUseCase } from './application/use-cases/get-inccloud-last-offline-moment-list.use-case';
+import { AlarmModule } from './modules/alarm/alarm.module';
 
 @Module({
     imports: [
@@ -42,7 +43,8 @@ import { GetInccloudLastOfflineMomentListUseCase } from './application/use-cases
         IncCloudModule,
         WayosModule,
         AuthModule,
-        UsersModule
+        UsersModule,
+        AlarmModule,
     ],
     controllers: [AppController],
     providers: [
