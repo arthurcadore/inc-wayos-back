@@ -1,5 +1,6 @@
 import { BaseEntity } from "src/database/entities/base.entity";
-import { Column, Entity } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
+import { AlarmComment } from "./alarm-comment.entity";
 
 @Entity('alarms')
 export class Alarm extends BaseEntity {
@@ -11,4 +12,7 @@ export class Alarm extends BaseEntity {
 
     @Column({ type: 'boolean', nullable: false })
     isSolved: boolean;
+
+    @OneToMany(() => AlarmComment, (comment) => comment.alarm)
+    comments: AlarmComment[];
 }

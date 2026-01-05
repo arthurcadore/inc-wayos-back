@@ -1,5 +1,5 @@
-import { Controller, Get, Inject, Param, Headers, Response, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiOkResponse, ApiBearerAuth, ApiParam, ApiHeader } from '@nestjs/swagger';
+import { Controller, Get, Inject, Param, Response, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiOkResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { ViewGlobalUseCase } from './application/use-cases/view-global.use-case';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
@@ -137,8 +137,15 @@ export class AppController {
         @Param('deviceType') deviceType: 'router' | 'switch' | 'ap',
         @Param('value') value: any,
         @Param('dayRange') dayRange: number = 15,
-    ): Promise<any[]> {
-        return await this.getAlarmLogListUseCase.execute({ deviceType, value, dayRange });
+        @Response() res: any
+    ): Promise<any> {
+        await delay(1500);
+        const alarms = await this.getAlarmLogListUseCase.execute({ deviceType, value, dayRange });
+        if (alarms.length === 0) {
+            res.status(204).send();
+        } else {
+            res.status(200).json(alarms);
+        }
     }
 
     @UseGuards(JwtAuthGuard)
