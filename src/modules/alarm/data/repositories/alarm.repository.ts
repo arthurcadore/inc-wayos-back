@@ -1,14 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Alarm } from "../entities/alarm.entity";
-import { AlarmRepositoryInterface, CreateAlarmDto } from "../interfaces/alarm-repository.interface";
+import { AlarmModel } from "../models/alarm.model";
+import { AlarmRepositoryInterface, CreateAlarmDto } from "../../interfaces/alarm-repository.interface";
+import { Alarm } from "../../domain/entities/alarm.entity";
+import { UUID } from "src/domain/object-values/uuid";
 
 @Injectable()
 export class AlarmRepository implements AlarmRepositoryInterface {
     constructor(
-        @InjectRepository(Alarm)
-        private readonly repository: Repository<Alarm>,
+        @InjectRepository(AlarmModel)
+        private readonly repository: Repository<AlarmModel>,
     ) {}
 
     findAll(): Promise<Alarm[]> {
@@ -23,7 +25,11 @@ export class AlarmRepository implements AlarmRepositoryInterface {
         throw new Error("Method not implemented.");
     }
 
-    createComment(alarmId: string, text: string): Promise<void> {
+    createComment(alarmId: UUID, text: string): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+
+    updateComment(alarmId: UUID, alarmCommentId: UUID, text: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
 }

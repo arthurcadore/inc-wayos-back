@@ -1,12 +1,43 @@
-import { Alarm } from '../entities/alarm.entity';
-import { AlarmComment } from '../entities/alarm-comment.entity';
+import { AlarmModel } from '../data/models/alarm.model';
+import { AlarmCommentModel } from '../data/models/alarm-comment.model';
 import { AlarmResponseDto } from '../dto/alarm-response.dto';
 import { AlarmCommentResponseDto } from '../dto/alarm-comment-response.dto';
+import { Alarm } from '../domain/entities/alarm.entity';
+import { AlarmComment } from '../domain/entities/alarm-comment.entity';
+import { UUID } from 'src/domain/object-values/uuid';
 
 export class AlarmMapper {
+    static toModel(alarm: Alarm): AlarmModel {
+        const model = new AlarmModel();
+        model.id = alarm.id.toString();
+        model.externalId = alarm.externalId;
+        model.title = alarm.title;
+        model.isSolved = alarm.isSolved;
+        model.createdAt = alarm.createdAt;
+        model.updatedAt = alarm.updatedAt;
+        return model;
+    }
+
+    static toEntity(alarmModel: AlarmModel): Alarm {
+        const entity = new Alarm(
+            UUID.fromString(alarmModel.id),
+            alarmModel.externalId,
+            alarmModel.title,
+            alarmModel.isSolved,
+            alarmModel.createdAt,
+            alarmModel.updatedAt,
+        );
+
+        if (alarmModel.comments) {
+            entity.addComments(alarmModel.comments.map(commentModel => AlarmCommentMapper.toEntity(commentModel)));
+        }
+
+        return entity;
+    }
+
     static toDto(alarm: Alarm, includeComments = false): AlarmResponseDto {
         const dto: AlarmResponseDto = {
-            id: alarm.id,
+            id: alarm.id.toString(),
             externalId: alarm.externalId,
             title: alarm.title,
             isSolved: alarm.isSolved,
@@ -14,10 +45,8 @@ export class AlarmMapper {
             updatedAt: alarm.updatedAt,
         };
 
-        if (includeComments && alarm.comments) {
-            dto.comments = alarm.comments.map(comment =>
-                AlarmCommentMapper.toDto(comment)
-            );
+        if (includeComments) {
+            dto.comments = alarm.getComments().map(comment => AlarmCommentMapper.toDto(comment));
         }
 
         return dto;
@@ -29,9 +58,31 @@ export class AlarmMapper {
 }
 
 export class AlarmCommentMapper {
+    static toModel(alarm: Alarm): AlarmModel {
+        const model = new AlarmModel();
+        model.id = alarm.id.toString();
+        model.externalId = alarm.externalId;
+        model.title = alarm.title;
+        model.isSolved = alarm.isSolved;
+        model.createdAt = alarm.createdAt;
+        model.updatedAt = alarm.updatedAt;
+        return model;
+    }
+
+    static toEntity(commentModel: AlarmCommentModel): AlarmComment {
+        return new AlarmComment(
+            UUID.fromString(commentModel.id),
+            commentModel.text,
+            commentModel.editedAt,
+            UUID.fromString(commentModel.alarm.id),
+            commentModel.createdAt,
+            commentModel.updatedAt,
+        );
+    }
+
     static toDto(comment: AlarmComment): AlarmCommentResponseDto {
         return {
-            id: comment.id,
+            id: comment.id.toString(),
             text: comment.text,
             editedAt: comment.editedAt,
             createdAt: comment.createdAt,

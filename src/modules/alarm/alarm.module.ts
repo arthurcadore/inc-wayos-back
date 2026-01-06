@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Alarm } from './entities/alarm.entity';
-import { AlarmComment } from './entities/alarm-comment.entity';
+import { AlarmModel } from './data/models/alarm.model';
+import { AlarmCommentModel } from './data/models/alarm-comment.model';
 import { ALARM_CONSTANTS } from './alarm.constants';
 import { CreateTestAlarmsSeed } from '../../database/seeds/create-test-alarms.seed';
 import { AlarmController } from './controller/alarm.controller';
-import { AlarmInMemoryRepository } from './repositories/alarm.in-memory.repository';
+import { AlarmInMemoryRepository } from './data/repositories/alarm.in-memory.repository';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Alarm, AlarmComment])],
+    imports: [TypeOrmModule.forFeature([AlarmModel, AlarmCommentModel])],
     controllers: [AlarmController],
     providers: [
         {

@@ -2,7 +2,7 @@ import { DataSource } from 'typeorm';
 import { config } from 'dotenv';
 import { resolve } from 'path';
 import * as bcrypt from 'bcrypt';
-import { User } from '../../modules/users/entities/user.entity';
+import { UserModel } from '../../modules/users/data/user.model';
 
 // Load environment variables
 const envFile = `.env.${process.env.NODE_ENV || 'development'}`;
@@ -16,7 +16,7 @@ const dataSource = new DataSource({
     username: process.env.DATABASE_USERNAME || 'eace_user',
     password: process.env.DATABASE_PASSWORD || 'eace_password',
     database: process.env.DATABASE_NAME || 'eace_backend_dashboard',
-    entities: [User],
+    entities: [UserModel],
     synchronize: false,
 });
 
@@ -27,7 +27,7 @@ async function seed() {
         await dataSource.initialize();
         console.log('✅ Database connection established');
 
-        const userRepository = dataSource.getRepository(User);
+        const userRepository = dataSource.getRepository(UserModel);
 
         // Check if admin user already exists
         const existingAdmin = await userRepository.findOne({

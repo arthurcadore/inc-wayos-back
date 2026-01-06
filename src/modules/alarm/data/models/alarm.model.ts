@@ -1,9 +1,9 @@
-import { BaseEntity } from "src/database/entities/base.entity";
+import { BaseModel } from "src/database/models/base.entity";
 import { Column, Entity, OneToMany } from "typeorm";
-import { AlarmComment } from "./alarm-comment.entity";
+import { AlarmCommentModel } from "./alarm-comment.model";
 
 @Entity('alarms')
-export class Alarm extends BaseEntity {
+export class AlarmModel extends BaseModel {
     @Column({ type: 'varchar', length: 255, nullable: false })
     externalId: string;
 
@@ -13,6 +13,6 @@ export class Alarm extends BaseEntity {
     @Column({ type: 'boolean', nullable: false })
     isSolved: boolean;
 
-    @OneToMany(() => AlarmComment, (comment) => comment.alarm)
-    comments: AlarmComment[];
+    @OneToMany(() => AlarmCommentModel, (comment) => comment.alarm)
+    comments: AlarmCommentModel[];
 }

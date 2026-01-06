@@ -35,13 +35,13 @@ export class CreateTestAlarmsSeed implements OnModuleInit {
             const alarm2 = await this.alarmRepository.create({
                 externalId: '147374', // sceneId de um Router WayOS
                 title: 'Temperatura alta',
-                isSolved: true,
+                isSolved: false,
             });
 
             const alarm3 = await this.alarmRepository.create({
                 externalId: '147374', // sceneId de um Router WayOS
                 title: 'Falha de comunicação',
-                isSolved: true,
+                isSolved: false,
             });
 
             // Create comments for alarm1
@@ -72,6 +72,9 @@ export class CreateTestAlarmsSeed implements OnModuleInit {
                 alarm3.id,
                 'Problema resolvido após atualização de credenciais',
             );
+
+            alarm2.markAsSolved();
+            alarm3.markAsSolved();
 
             console.log('✅ Test alarms and comments created successfully');
         } catch (error) {

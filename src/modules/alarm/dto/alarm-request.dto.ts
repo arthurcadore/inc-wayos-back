@@ -13,3 +13,21 @@ export class CreateAlarmCommentDto {
     @IsNotEmpty()
     alarmId: string;
 }
+
+export class EditAlarmCommentDto {
+    @ApiProperty()
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(5000)
+    text: string;
+
+    @ApiProperty()
+    @IsUUID()
+    @IsNotEmpty()
+    alarmId: string;
+
+    @ApiProperty()
+    @IsUUID()
+    @IsNotEmpty()
+    alarmCommentId: string;
+}

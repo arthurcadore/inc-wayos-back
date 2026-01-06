@@ -139,7 +139,6 @@ export class AppController {
         @Param('dayRange') dayRange: number = 15,
         @Response() res: any
     ): Promise<any> {
-        await delay(1500);
         const alarms = await this.getAlarmLogListUseCase.execute({ deviceType, value, dayRange });
         if (alarms.length === 0) {
             res.status(204).send();

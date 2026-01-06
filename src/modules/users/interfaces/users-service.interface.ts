@@ -1,6 +1,6 @@
-import { User } from '../entities/user.entity';
+import { UserModel } from '../data/user.model';
 
 export interface UsersServiceInterface {
-    findByEmail(email: string): Promise<User | null>;
-    findById(id: string): Promise<User | null>;
+    findByEmail(email: string): Promise<UserModel | null>;
+    findById(id: string): Promise<UserModel | null>;
 }
