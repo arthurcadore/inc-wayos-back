@@ -14,4 +14,5 @@ export interface AlarmRepositoryInterface {
     findByExternalId(externalId: string): Promise<Alarm[]>;
     createComment(alarmId: UUID, text: string): Promise<void>;
     updateComment(alarmId: UUID, alarmCommentId: UUID, text: string): Promise<void>;
+    deleteComment(alarmId: UUID, alarmCommentId: UUID): Promise<void>;
 }

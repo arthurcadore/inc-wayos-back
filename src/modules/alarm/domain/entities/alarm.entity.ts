@@ -71,4 +71,14 @@ export class Alarm {
         this._isSolved = true;
         this._updatedAt = new Date();
     }
+
+    public removeComment(commentId: UUID): void {
+        const index = this.comments.findIndex(comment => comment.id.isEqual(commentId));
+
+        if (index === -1) {
+            throw new Error("Comentário não encontrado.");
+        }
+
+        this.comments.splice(index, 1);
+    }
 }

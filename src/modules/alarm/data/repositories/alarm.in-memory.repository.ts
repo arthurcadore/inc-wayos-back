@@ -63,4 +63,14 @@ export class AlarmInMemoryRepository implements AlarmRepositoryInterface {
 
         comment.setText(text);
     }
+
+    async deleteComment(alarmId: UUID, alarmCommentId: UUID): Promise<void> {
+        const alarm = this.alarms.find(alarm => alarm.id.isEqual(alarmId));
+
+        if (!alarm) {
+            throw new Error('Alarme não encontrado');
+        }
+
+        alarm.removeComment(alarmCommentId);
+    }
 }

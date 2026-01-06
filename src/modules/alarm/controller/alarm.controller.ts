@@ -1,4 +1,4 @@
-import { Controller, Inject, Post, UseGuards, Body, Patch } from "@nestjs/common";
+import { Controller, Inject, Post, UseGuards, Body, Patch, Param, Delete } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ALARM_CONSTANTS } from "../alarm.constants";
 import { JwtAuthGuard } from "src/modules/auth/guards/jwt-auth.guard";
@@ -34,5 +34,16 @@ export class AlarmController {
     @Patch('alarm-comments')
     async updateComment(@Body() { alarmId, alarmCommentId, text }: EditAlarmCommentDto): Promise<void> {
         await this.alarmRepository.updateComment(UUID.fromString(alarmId), UUID.fromString(alarmCommentId), text);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @ApiOperation({
+        summary: 'Deletar comentário de alarme',
+        description: 'Endpoint para deletar um comentário existente de um alarme específico.',
+    })
+    @Delete('alarm-comments/alarmId/:alarmId/alarmCommentId/:alarmCommentId')
+    async deleteComment(@Param('alarmId') alarmId: string, @Param('alarmCommentId') alarmCommentId: string): Promise<void> {
+        await this.alarmRepository.deleteComment(UUID.fromString(alarmId), UUID.fromString(alarmCommentId));
     }
 }

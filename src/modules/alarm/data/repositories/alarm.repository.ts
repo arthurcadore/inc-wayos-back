@@ -32,4 +32,8 @@ export class AlarmRepository implements AlarmRepositoryInterface {
     updateComment(alarmId: UUID, alarmCommentId: UUID, text: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
+
+    deleteComment(alarmId: UUID, alarmCommentId: UUID): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
 }
