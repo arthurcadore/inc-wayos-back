@@ -27,19 +27,19 @@ export class CreateTestAlarmsSeed implements OnModuleInit {
 
             // Create test alarms
             const alarm1 = await this.alarmRepository.create({
-                externalId: '147374', // sceneId de um Router WayOS
+                externalId: '179219', // sceneId de um Router WayOS
                 title: 'Dispositivo offline',
                 isSolved: false,
             });
 
             const alarm2 = await this.alarmRepository.create({
-                externalId: '147374', // sceneId de um Router WayOS
+                externalId: '179219', // sceneId de um Router WayOS
                 title: 'Temperatura alta',
                 isSolved: false,
             });
 
             const alarm3 = await this.alarmRepository.create({
-                externalId: '147374', // sceneId de um Router WayOS
+                externalId: '179219', // sceneId de um Router WayOS
                 title: 'Falha de comunicação',
                 isSolved: false,
             });

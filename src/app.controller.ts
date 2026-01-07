@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Param, Response, UseGuards } from '@nestjs/common';
+import { Controller, Get, Inject, Param, Query, Response, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiOkResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { ViewGlobalUseCase } from './application/use-cases/view-global.use-case';
@@ -11,6 +11,7 @@ import { GetWayosLastOfflineMomentListUseCase } from './application/use-cases/ge
 import { GetInccloudLastOfflineMomentListUseCase } from './application/use-cases/get-inccloud-last-offline-moment-list.use-case';
 import type { WayosServiceInterface } from './modules/wayos/interfaces/wayos-service.interface';
 import { WAYOS_CONSTANTS } from './modules/wayos/wayos.constants';
+import { DateConverter } from './shared/converters/date-converte';
 
 interface HealthCheckResponse {
     message: string;
@@ -75,7 +76,7 @@ export class AppController {
     @ApiBearerAuth('access-token')
     @Get('view-global')
     async getWayosHealthCheck(@Response() res: any): Promise<any> {
-        // await delay(1500);
+        // await delay(3500);
         // res.status(200).json(data);
         const response = await this.viewGlobalUseCase.execute();
         res.status(200).json(response);
@@ -166,5 +167,19 @@ export class AppController {
     @Get('wayos-user-scene-list-summerired')
     async getUserSceneListSummeriredAllPages(): Promise<any[]> {
         return this.wayosService.getUserSceneListSummeriredAllPages();
+    }
+
+    // Temporário: endpoint para teste direto dos logs de alarme Wayos
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @Get('wayos-alarm-logs/:sceneId/:daysRange')
+    async getWayosAlarms(
+        @Param('sceneId') sceneId: number,
+        @Param('daysRange') daysRange: number,
+    ): Promise<any[]> {
+        const { startAt, endAt } = DateConverter.createRangeDates(daysRange);
+        const response = await this.wayosService.getAlarmLogListAllPages(sceneId, startAt, endAt);
+        return response;
     }
 }
