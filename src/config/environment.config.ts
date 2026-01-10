@@ -57,6 +57,9 @@ export interface EnvironmentVariables {
     // JWT Configuration
     JWT_SECRET: string;
     JWT_EXPIRES_IN: string;
+
+    // Alarm Cleanup Configuration
+    ALARM_CLEANUP_HOURS: number;
 }
 
 export function validateEnvironment(config: Record<string, unknown>): EnvironmentVariables {
@@ -96,5 +99,6 @@ export function validateEnvironment(config: Record<string, unknown>): Environmen
         WAYOS_ACCESS_KEY_SECRET: config.WAYOS_ACCESS_KEY_SECRET as string,
         JWT_SECRET: config.JWT_SECRET as string,
         JWT_EXPIRES_IN: (config.JWT_EXPIRES_IN as string),
+        ALARM_CLEANUP_HOURS: parseInt(config.ALARM_CLEANUP_HOURS as string, 10) || 24,
     };
 }

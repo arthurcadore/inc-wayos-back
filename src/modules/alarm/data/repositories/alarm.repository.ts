@@ -114,4 +114,15 @@ export class AlarmRepository implements AlarmRepositoryInterface {
         alarmEntity.toogleSolved();
         await this.repository.save(AlarmMapper.toModel(alarmEntity));
     }
+
+    async deleteAlarmsByUpdatedAt(updatedAtBefore: Date): Promise<number> {
+        const result = await this.repository
+            .createQueryBuilder()
+            .delete()
+            .from(AlarmModel)
+            .where('updatedAt < :updatedAtBefore', { updatedAtBefore })
+            .execute();
+
+        return result.affected || 0;
+    }
 }
