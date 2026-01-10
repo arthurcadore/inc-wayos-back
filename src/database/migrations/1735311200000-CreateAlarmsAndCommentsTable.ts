@@ -14,12 +14,12 @@ export class CreateAlarmsAndCommentsTable1735311200000 implements MigrationInter
                         default: 'uuid_generate_v4()',
                     },
                     {
-                        name: 'createdAt',
+                        name: 'created_at',
                         type: 'timestamp',
                         default: 'CURRENT_TIMESTAMP',
                     },
                     {
-                        name: 'updatedAt',
+                        name: 'updated_at',
                         type: 'timestamp',
                         default: 'CURRENT_TIMESTAMP',
                     },
@@ -64,12 +64,12 @@ export class CreateAlarmsAndCommentsTable1735311200000 implements MigrationInter
                         default: 'uuid_generate_v4()',
                     },
                     {
-                        name: 'createdAt',
+                        name: 'created_at',
                         type: 'timestamp',
                         default: 'CURRENT_TIMESTAMP',
                     },
                     {
-                        name: 'updatedAt',
+                        name: 'updated_at',
                         type: 'timestamp',
                         default: 'CURRENT_TIMESTAMP',
                     },
