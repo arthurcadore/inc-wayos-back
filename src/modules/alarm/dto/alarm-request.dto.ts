@@ -31,3 +31,10 @@ export class EditAlarmCommentDto {
     @IsNotEmpty()
     alarmCommentId: string;
 }
+
+export class ToogleAlarmSolvedDto {
+    @ApiProperty()
+    @IsUUID()
+    @IsNotEmpty()
+    alarmId: string;
+}

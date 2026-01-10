@@ -2,7 +2,7 @@ import { Controller, Inject, Post, UseGuards, Body, Patch, Param, Delete } from 
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ALARM_CONSTANTS } from "../alarm.constants";
 import { JwtAuthGuard } from "src/modules/auth/guards/jwt-auth.guard";
-import { CreateAlarmCommentDto, EditAlarmCommentDto } from "../dto/alarm-request.dto";
+import { CreateAlarmCommentDto, EditAlarmCommentDto, ToogleAlarmSolvedDto } from "../dto/alarm-request.dto";
 import type { AlarmRepositoryInterface } from "../interfaces/alarm-repository.interface";
 import { UUID } from "src/domain/object-values/uuid";
 
@@ -45,5 +45,16 @@ export class AlarmController {
     @Delete('alarm-comments/alarmId/:alarmId/alarmCommentId/:alarmCommentId')
     async deleteComment(@Param('alarmId') alarmId: string, @Param('alarmCommentId') alarmCommentId: string): Promise<void> {
         await this.alarmRepository.deleteComment(UUID.fromString(alarmId), UUID.fromString(alarmCommentId));
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @ApiOperation({
+        summary: 'Alternar status resolvido/não resolvido do alarme',
+        description: 'Endpoint para alternar o status de um alarme entre resolvido e não resolvido.',
+    })
+    @Patch('toogle-alarm-solved')
+    async toogleAlarmSolved(@Body() { alarmId }: ToogleAlarmSolvedDto): Promise<void> {
+        await this.alarmRepository.toogleAlarmSolved(UUID.fromString(alarmId));
     }
 }

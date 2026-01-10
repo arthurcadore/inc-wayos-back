@@ -28,7 +28,7 @@ export class AlarmRepository implements AlarmRepositoryInterface {
             }
         });
 
-        return alarmModels.map(model => AlarmMapper.toEntity(model));
+        return alarmModels.map(model => AlarmMapper.toEntity(model, true));
     }
 
     async save(alarm: Alarm): Promise<void> {
@@ -47,7 +47,7 @@ export class AlarmRepository implements AlarmRepositoryInterface {
                 return null;
             }
 
-            return AlarmMapper.toEntity(alarmModel);
+            return AlarmMapper.toEntity(alarmModel, true);
         } catch (error) {
             throw new Error(`Erro ao buscar alarme por externalId: ${error}`);
         }
@@ -99,5 +99,19 @@ export class AlarmRepository implements AlarmRepositoryInterface {
         }
 
         await this.commentRepository.remove(comment);
+    }
+
+    async toogleAlarmSolved(alarmId: UUID): Promise<void> {
+        const alarm = await this.repository.findOne({
+            where: { id: alarmId.toString() }
+        });
+
+        if (!alarm) {
+            throw new Error('Alarme não encontrado.');
+        }
+
+        const alarmEntity = AlarmMapper.toEntity(alarm);
+        alarmEntity.toogleSolved();
+        await this.repository.save(AlarmMapper.toModel(alarmEntity));
     }
 }

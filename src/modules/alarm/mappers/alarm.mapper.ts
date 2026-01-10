@@ -19,7 +19,16 @@ export class AlarmMapper {
         return model;
     }
 
-    static toEntity(alarmModel: AlarmModel): Alarm {
+    static toEntity(alarmModel: AlarmModel, includeComments = false): Alarm {
+        let comments: AlarmComment[] = [];
+
+        if (includeComments && alarmModel.comments) {
+            for (const commentModel of alarmModel.comments) {
+                commentModel.alarm = alarmModel; // Ensure the relation is set
+                comments.push(AlarmCommentMapper.toEntity(commentModel));
+            }
+        }
+
         const entity = new Alarm(
             UUID.fromString(alarmModel.id),
             alarmModel.externalId,
@@ -28,11 +37,8 @@ export class AlarmMapper {
             alarmModel.isSolved,
             alarmModel.createdAt,
             alarmModel.updatedAt,
+            comments,
         );
-
-        if (alarmModel.comments) {
-            entity.addComments(alarmModel.comments.map(commentModel => AlarmCommentMapper.toEntity(commentModel)));
-        }
 
         return entity;
     }

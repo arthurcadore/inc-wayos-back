@@ -69,4 +69,14 @@ export class AlarmInMemoryRepository implements AlarmRepositoryInterface {
 
         alarm.removeComment(alarmCommentId);
     }
+
+    async toogleAlarmSolved(alarmId: UUID): Promise<void> {
+        const alarm = this.alarms.find(alarm => alarm.id.isEqual(alarmId));
+
+        if (!alarm) {
+            throw new Error('Alarme não encontrado');
+        }
+
+        alarm.toogleSolved();
+    }
 }

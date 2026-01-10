@@ -78,8 +78,8 @@ export class CreateTestAlarmsSeed implements OnModuleInit {
                 'Problema resolvido após atualização de credenciais',
             );
 
-            alarm2.markAsSolved();
-            alarm3.markAsSolved();
+            alarm2.toogleSolved();
+            alarm3.toogleSolved();
 
             console.log('✅ Test alarms and comments created successfully');
         } catch (error) {

@@ -16,4 +16,5 @@ export interface AlarmRepositoryInterface {
     createComment(alarmId: UUID, text: string): Promise<void>;
     updateComment(alarmId: UUID, alarmCommentId: UUID, text: string): Promise<void>;
     deleteComment(alarmId: UUID, alarmCommentId: UUID): Promise<void>;
+    toogleAlarmSolved(alarmId: UUID): Promise<void>;
 }

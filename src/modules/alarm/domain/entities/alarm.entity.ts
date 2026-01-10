@@ -3,7 +3,6 @@ import { AlarmComment } from "./alarm-comment.entity";
 import { DeviceType } from "src/domain/object-values/device-type";
 
 export class Alarm {
-    private comments: AlarmComment[] = [];
 
     constructor(
         private readonly _id: UUID,
@@ -13,6 +12,7 @@ export class Alarm {
         private _isSolved: boolean,
         private readonly _createdAt: Date,
         private _updatedAt: Date,
+        private _comments: AlarmComment[],
     ) {}
 
     get id(): UUID {
@@ -53,11 +53,13 @@ export class Alarm {
             false,
             now,
             now,
+            [],
         );
     }
 
     getComments(): AlarmComment[] {
-        return this.comments;
+        // Antes de retornar, ordene os comentários por updateAt descrescente
+        return this._comments.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
     }
 
     // Crie um método para validar se um comentário pode ser adicionado usando regras de negócio
@@ -66,7 +68,7 @@ export class Alarm {
             throw new Error("Não é possível adicionar comentários a um alarme resolvido.");
         }
 
-        if (this.comments.find(c => c.id.toString() === comment.id.toString())) {
+        if (this._comments.find(c => c.id.toString() === comment.id.toString())) {
             throw new Error("Comentário já existe neste alarme.");
         }
 
@@ -79,25 +81,25 @@ export class Alarm {
 
     public addComment(comment: AlarmComment): void {
         this.canAddComment(comment);
-        this.comments.push(comment);
+        this._comments.push(comment);
     }
 
     public addComments(comments: AlarmComment[]): void {
         comments.forEach(comment => this.addComment(comment));
     }
 
-    public markAsSolved(): void {
-        this._isSolved = true;
+    public toogleSolved(): void {
+        this._isSolved = !this._isSolved;
         this._updatedAt = new Date();
     }
 
     public removeComment(commentId: UUID): void {
-        const index = this.comments.findIndex(comment => comment.id.isEqual(commentId));
+        const index = this._comments.findIndex(comment => comment.id.isEqual(commentId));
 
         if (index === -1) {
             throw new Error("Comentário não encontrado.");
         }
 
-        this.comments.splice(index, 1);
+        this._comments.splice(index, 1);
     }
 }
