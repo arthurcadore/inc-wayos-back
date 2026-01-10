@@ -1,6 +1,8 @@
 import { Injectable, OnModuleInit, Inject } from '@nestjs/common';
 import { ALARM_CONSTANTS } from '../../modules/alarm/alarm.constants';
 import type { AlarmRepositoryInterface } from 'src/modules/alarm/interfaces/alarm-repository.interface';
+import { DeviceType } from 'src/domain/object-values/device-type';
+import { Alarm } from 'src/modules/alarm/domain/entities/alarm.entity';
 
 @Injectable()
 export class CreateTestAlarmsSeed implements OnModuleInit {
@@ -26,23 +28,26 @@ export class CreateTestAlarmsSeed implements OnModuleInit {
             }
 
             // Create test alarms
-            const alarm1 = await this.alarmRepository.create({
-                externalId: '179219', // sceneId de um Router WayOS
-                title: 'Dispositivo offline',
-                isSolved: false,
-            });
+            const alarm1 = Alarm.create(
+                '179219', // sceneId de um Router WayOS
+                DeviceType.Router,
+                'Device offline',
+            );
+            await this.alarmRepository.save(alarm1);
 
-            const alarm2 = await this.alarmRepository.create({
-                externalId: '179219', // sceneId de um Router WayOS
-                title: 'Temperatura alta',
-                isSolved: false,
-            });
+            const alarm2 = Alarm.create(
+                '179220', // sceneId de um Router WayOS
+                DeviceType.Router,
+               'Device offline',
+            );
+            await this.alarmRepository.save(alarm2);
 
-            const alarm3 = await this.alarmRepository.create({
-                externalId: '179219', // sceneId de um Router WayOS
-                title: 'Falha de comunicação',
-                isSolved: false,
-            });
+            const alarm3 = Alarm.create(
+                '179219', // sceneId de um Router WayOS
+                DeviceType.Router,
+                'Device offline',
+            );
+            await this.alarmRepository.save(alarm3);
 
             // Create comments for alarm1
             await this.alarmRepository.createComment(

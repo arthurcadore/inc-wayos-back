@@ -12,21 +12,18 @@ export class AlarmInMemoryRepository implements AlarmRepositoryInterface {
         return this.alarms;
     }
 
-    async create(alarm: CreateAlarmDto): Promise<Alarm> {
-        const newAlarm: Alarm = new Alarm(
-            UUID.generate(),
-            alarm.externalId,
-            alarm.title,
-            alarm.isSolved,
-            new Date(),
-            new Date(),
-        );
-        this.alarms.push(newAlarm);
-        return newAlarm;
+    async save(alarm: Alarm): Promise<void> {
+        this.alarms.push(alarm);
     }
 
-    async findByExternalId(externalId: string): Promise<Alarm[]> {
-        return this.alarms.filter(alarm => alarm.externalId === externalId);
+    async findByExternalId(externalId: string): Promise<Alarm | null> {
+        const alarm = this.alarms.find(alarm => alarm.externalId === externalId);
+
+        if (!alarm) {
+            return null;
+        }
+
+        return alarm;
     }
 
     async createComment(alarmId: UUID, text: string): Promise<void> {
@@ -39,7 +36,6 @@ export class AlarmInMemoryRepository implements AlarmRepositoryInterface {
         const alarmComment = new AlarmComment(
             UUID.generate(),
             text,
-            null,
             alarmId,
             new Date(),
             new Date(),

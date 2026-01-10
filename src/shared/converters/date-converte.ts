@@ -37,12 +37,24 @@ export class DateConverter {
      * @param daysRange Representa o número de dias para o intervalo
      * @returns Objeto com as datas de início (startAt) e fim (endAt)
      */
-    public static createRangeDates(daysRange: number): { startAt: string; endAt: string } {
+    public static createRangeDateStgs(daysRange: number): { startAt: string; endAt: string } {
         const endAtDate = new Date();
         const startAtDate = new Date(endAtDate);
         startAtDate.setDate(startAtDate.getDate() - daysRange);
         const startAt = DateConverter.toISO8601(startAtDate);
         const endAt = DateConverter.toISO8601(endAtDate);
         return { startAt, endAt };
+    }
+
+    /**
+     * @description Cria as datas de início e fim como objetos Date para o intervalo de dias definido
+     * @param daysRange Representa o número de dias para o intervalo
+     * @returns Objeto com as datas de início (startAt) e fim (endAt)
+     */
+    public static createRangeDates(daysRange: number): { startAt: Date; endAt: Date } {
+        const endAtDate = new Date();
+        const startAtDate = new Date(endAtDate);
+        startAtDate.setDate(startAtDate.getDate() - daysRange);
+        return { startAt: startAtDate, endAt: endAtDate };
     }
 }

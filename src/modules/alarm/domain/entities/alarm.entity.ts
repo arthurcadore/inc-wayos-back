@@ -1,12 +1,14 @@
 import { UUID } from "src/domain/object-values/uuid";
 import { AlarmComment } from "./alarm-comment.entity";
+import { DeviceType } from "src/domain/object-values/device-type";
 
 export class Alarm {
     private comments: AlarmComment[] = [];
 
     constructor(
         private readonly _id: UUID,
-        private readonly _externalId: string,
+        private readonly _externalId: string, // Wayos == sceneid, IncCloud == shopId
+        private readonly _deviceType: DeviceType,
         private _title: string,
         private _isSolved: boolean,
         private readonly _createdAt: Date,
@@ -19,6 +21,10 @@ export class Alarm {
 
     get externalId(): string {
         return this._externalId;
+    }
+
+    get deviceType(): DeviceType {
+        return this._deviceType;
     }
 
     get title(): string {
@@ -35,6 +41,19 @@ export class Alarm {
 
     get updatedAt(): Date {
         return this._updatedAt;
+    }
+
+    static create(externalId: string, deviceType: DeviceType, title: string): Alarm {
+        const now = new Date();
+        return new Alarm(
+            UUID.generate(),
+            externalId,
+            deviceType,
+            title,
+            false,
+            now,
+            now,
+        );
     }
 
     getComments(): AlarmComment[] {

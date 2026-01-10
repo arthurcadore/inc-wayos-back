@@ -4,7 +4,6 @@ export class AlarmComment {
     constructor(
         private readonly _id: UUID,
         private _text: string,
-        private _editedAt: Date | null,
         private readonly _alarmId: UUID,
         private readonly _createdAt: Date,
         private _updatedAt: Date,
@@ -16,10 +15,6 @@ export class AlarmComment {
 
     get text(): string {
         return this._text;
-    }
-
-    get editedAt(): Date | null {
-        return this._editedAt;
     }
 
     get alarmId(): UUID {
@@ -36,7 +31,6 @@ export class AlarmComment {
 
     setText(newText: string): void {
         this._text = newText;
-        this._editedAt = new Date();
         this._updatedAt = new Date();
     }
 }

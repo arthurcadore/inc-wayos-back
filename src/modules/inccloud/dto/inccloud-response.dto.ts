@@ -72,3 +72,76 @@ export interface RegionDevice {
     addTimeStr: string;
     firstOnlineTimeStr: string;
 }
+
+export interface IncCloudAlarmItem {
+    id: number;
+    userId: number;
+    userName: string;
+    shopId: number;
+    shopName: string;
+    level: number;
+    alarmTime: number;
+    alarmValue: any | null;
+    status: number;
+    clearTime: any | null;
+    alarmNumber: any | null;
+    module: any | null;
+    alarmTypeName: string;
+    alarmTypeName_en: string;
+    alarmType: string;
+    alarmTypeNumber: number;
+    message: string;
+    message_en: string;
+    detail: string;
+    detail_en: string;
+    devType: string;
+    devSn: string;
+    devName: string;
+    dayLabel: number;
+    hourLabel: number;
+    fiveMinLabel: number;
+    readStatus: number;
+    remark: any | null;
+    regionId: any | null;
+    regionName: string;
+    mac: any | null;
+    ifName: any | null;
+    tunnelId: any | null;
+    tunnelName: any | null;
+    updatedTime: any | null;
+    expireTime: number;
+    ip: any | null;
+}
+
+export interface IncCloudAlarmHistoryList {
+    code: number;
+    message: string;
+    data: {
+        size: any | null;
+        start: any | null;
+        level: any | null;
+        levels: any | null;
+        status: any | null;
+        alarmTypeName: any | null;
+        alarmTypeName_en: any | null;
+        shopName: any | null;
+        devSn: any | null;
+        detail: any | null;
+        detail_en: any | null;
+        devName: any | null;
+        devType: any | null;
+        shopIds: any | null;
+        alarmTime: any | null;
+        clearTime: any | null;
+        count: number;
+        todayNotClearedCount: number;
+        historyList: IncCloudAlarmItem[];
+        startTime: any | null;
+        endTime: any | null;
+        order: any | null;
+        sort: any | null;
+        regionName: any | null;
+        timeType: any | null;
+        alarmTypeList: any | null;
+    };
+}

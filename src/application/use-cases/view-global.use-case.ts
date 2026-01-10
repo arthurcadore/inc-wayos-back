@@ -94,6 +94,7 @@ export class ViewGlobalUseCase {
 
         for (const item of shopDevices) {
             const device: IncCloudDevice = {
+                shopId: item.shopId,
                 devType: item.devType,
                 sn: item.devSn,
                 online: item.status === 1,

@@ -14,7 +14,7 @@ export class GetWayosLastOfflineMomentListUseCase {
     ) { }
 
     async execute(sceneId: number): Promise<WayosAlarmLogItem[]> {
-        const { startAt, endAt } = DateConverter.createRangeDates(this.DAYS_RANGE);
+        const { startAt, endAt } = DateConverter.createRangeDateStgs(this.DAYS_RANGE);
         const alarmLogs = await this.wayosService.getAlarmLogListAllPages(sceneId, startAt, endAt);
         const filteredLogs = alarmLogs
             .filter(log => log.type === WayosAlarmType.DEV_OFFLINE)

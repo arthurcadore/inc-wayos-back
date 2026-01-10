@@ -3,9 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AlarmModel } from './data/models/alarm.model';
 import { AlarmCommentModel } from './data/models/alarm-comment.model';
 import { ALARM_CONSTANTS } from './alarm.constants';
-import { CreateTestAlarmsSeed } from '../../database/seeds/create-test-alarms.seed';
+// import { CreateTestAlarmsSeed } from '../../database/seeds/create-test-alarms.seed';
 import { AlarmController } from './controller/alarm.controller';
-import { AlarmInMemoryRepository } from './data/repositories/alarm.in-memory.repository';
+import { AlarmRepository } from './data/repositories/alarm.repository';
 
 @Module({
     imports: [TypeOrmModule.forFeature([AlarmModel, AlarmCommentModel])],
@@ -13,9 +13,9 @@ import { AlarmInMemoryRepository } from './data/repositories/alarm.in-memory.rep
     providers: [
         {
             provide: ALARM_CONSTANTS.ALARM_REPOSITORY,
-            useClass: AlarmInMemoryRepository,
+            useClass: AlarmRepository,
         },
-        CreateTestAlarmsSeed, // TODO: Remover essa classe após terminar o módulo de alarmes
+        // CreateTestAlarmsSeed, // TODO: Remover essa classe após terminar o módulo de alarmes
     ],
     exports: [
         ALARM_CONSTANTS.ALARM_REPOSITORY,

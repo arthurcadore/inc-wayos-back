@@ -7,6 +7,9 @@ import { ALARM_CONSTANTS } from 'src/modules/alarm/alarm.constants';
 import { AlarmMapper } from 'src/modules/alarm/mappers/alarm.mapper';
 import { AlarmResponseDto } from 'src/modules/alarm/dto/alarm-response.dto';
 import type { AlarmRepositoryInterface } from 'src/modules/alarm/interfaces/alarm-repository.interface';
+import { DeviceType } from 'src/domain/object-values/device-type';
+import { DateConverter } from 'src/shared/converters/date-converte';
+import { Alarm } from 'src/modules/alarm/domain/entities/alarm.entity';
 
 @Injectable()
 export class GetAlarmLogListUseCase {
@@ -18,15 +21,63 @@ export class GetAlarmLogListUseCase {
         private readonly incCloudService: IncCloudService,
 
         @Inject(ALARM_CONSTANTS.ALARM_REPOSITORY)
-        private readonly alarmInMemoryRepository: AlarmRepositoryInterface,
+        private readonly alarmRepository: AlarmRepositoryInterface,
     ) { }
 
     async execute({ deviceType, value, dayRange }: GetAlarmLogInput): Promise<AlarmResponseDto[]> {
-        // Mocked response for development purposes
-        const alarms = await this.alarmInMemoryRepository.findByExternalId(value);
-        return AlarmMapper.toDtoList(alarms, true);
+        let alarmListFromApi: any[] = [];
 
-        // Implemwntar lógica real.
+        if (deviceType === DeviceType.Router) {
+            const { startAt, endAt } = DateConverter.createRangeDateStgs(dayRange);
+            const alarms = await this.wayosService.getAlarmLogListAllPages(parseInt(value), startAt, endAt);
+
+            if (!alarms || alarms.length === 0) {
+                return [];
+            }
+
+            alarmListFromApi = alarms.map(alarm => ({
+                externalId: alarm.id,
+                title: alarm.type,
+                deviceType: DeviceType.Router,
+                createAt: alarm.happen_at,
+            }));
+        } else if (deviceType === DeviceType.Switch || deviceType === DeviceType.AccessPoint) {
+            const { startAt, endAt } = DateConverter.createRangeDates(dayRange);
+            const alarms = await this.incCloudService.getIncCloudAlarmHistoryList(parseInt(value), 1, 100, startAt.getTime(), endAt.getTime());
+
+            if (!alarms || alarms.length === 0) {
+                return [];
+            }
+
+            alarmListFromApi = alarms.map(alarm => ({
+                externalId: alarm.id,
+                title: alarm.alarmTypeName_en,
+                deviceType: deviceType,
+                createAt: new Date(alarm.alarmTime),
+            }));
+        } else {
+            throw new Error('Unsupported device type');
+        }
+
+        const alarms: Alarm[] = [];
+
+        for (const alarmData of alarmListFromApi) {
+            const existingAlarm = await this.alarmRepository.findByExternalId(alarmData.externalId);
+            if (!existingAlarm) {
+                const newAlarm = Alarm.create(
+                    alarmData.externalId,
+                    alarmData.deviceType,
+                    alarmData.title,
+                );
+                await this.alarmRepository.save(newAlarm);
+                alarms.push(newAlarm);
+            } else {
+                alarms.push(existingAlarm!);
+            }
+
+        }
+
+        return AlarmMapper.toDtoList(alarms, true);
     }
 }
 

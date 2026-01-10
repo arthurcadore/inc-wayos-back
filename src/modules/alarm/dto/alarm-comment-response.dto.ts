@@ -7,9 +7,6 @@ export class AlarmCommentResponseDto {
     @ApiProperty()
     text: string;
 
-    @ApiProperty({ nullable: true })
-    editedAt: Date | null;
-
     @ApiProperty()
     createdAt: Date;
 

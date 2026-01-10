@@ -12,6 +12,9 @@ import { GetInccloudLastOfflineMomentListUseCase } from './application/use-cases
 import type { WayosServiceInterface } from './modules/wayos/interfaces/wayos-service.interface';
 import { WAYOS_CONSTANTS } from './modules/wayos/wayos.constants';
 import { DateConverter } from './shared/converters/date-converte';
+import { INC_CLOUD_CONSTANTS } from './modules/inccloud/inc-cloud.constants';
+import type { IncCloudServiceInterface } from './modules/inccloud/interfaces/inccloud-service.interface';
+import { DeviceType } from './domain/object-values/device-type';
 
 interface HealthCheckResponse {
     message: string;
@@ -31,7 +34,9 @@ export class AppController {
         private readonly getWayosLastOfflineMomentListUseCase: GetWayosLastOfflineMomentListUseCase,
         private readonly getInccloudLastOfflineMomentListUseCase: GetInccloudLastOfflineMomentListUseCase,
         @Inject(WAYOS_CONSTANTS.WAYOS_SERVICE)
-        private readonly wayosService: WayosServiceInterface
+        private readonly wayosService: WayosServiceInterface,
+        @Inject(INC_CLOUD_CONSTANTS.INC_CLOUD_SERVICE)
+        private readonly inccloudService: IncCloudServiceInterface
     ) { }
 
     @Get()
@@ -135,17 +140,13 @@ export class AppController {
         description: 'Internal server error'
     })
     async getAlarmLogs(
-        @Param('deviceType') deviceType: 'router' | 'switch' | 'ap',
+        @Param('deviceType') deviceType: DeviceType,
         @Param('value') value: any,
         @Param('dayRange') dayRange: number = 15,
         @Response() res: any
     ): Promise<any> {
         const alarms = await this.getAlarmLogListUseCase.execute({ deviceType, value, dayRange });
-        if (alarms.length === 0) {
-            res.status(204).send();
-        } else {
-            res.status(200).json(alarms);
-        }
+        res.status(200).json(alarms);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -174,12 +175,26 @@ export class AppController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('access-token')
     @Get('wayos-alarm-logs/:sceneId/:daysRange')
-    async getWayosAlarms(
+    async getWayosAlarmLogs(
         @Param('sceneId') sceneId: number,
         @Param('daysRange') daysRange: number,
     ): Promise<any[]> {
-        const { startAt, endAt } = DateConverter.createRangeDates(daysRange);
+        const { startAt, endAt } = DateConverter.createRangeDateStgs(daysRange);
         const response = await this.wayosService.getAlarmLogListAllPages(sceneId, startAt, endAt);
         return response;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @Get('inccloud-alarm-logs')
+    async getIncCloudAlarmHistoryList(
+        @Query('shopId') shopId: number,
+        @Query('pageNum') pageNum: number,
+        @Query('pageSize') pageSize: number,
+        @Query('daysRange') daysRange: number,
+    ): Promise<any[]> {
+        const { startAt, endAt } = DateConverter.createRangeDates(daysRange);
+        console.log('startAt:', startAt.getTime(), 'endAt:', endAt.getTime());
+        return await this.inccloudService.getIncCloudAlarmHistoryList(shopId, pageNum, pageSize, startAt.getTime(), endAt.getTime());
     }
 }

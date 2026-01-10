@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IncCloudResponseBase, RegionDevice, ShopDevice } from '../dto/inccloud-response.dto';
+import { IncCloudAlarmHistoryList, IncCloudAlarmItem, IncCloudResponseBase, RegionDevice, ShopDevice } from '../dto/inccloud-response.dto';
 import { IncCloudServiceInterface } from '../interfaces/inccloud-service.interface';
 import axios, { AxiosInstance } from 'axios';
 import axiosRetry from 'axios-retry';
@@ -133,6 +133,39 @@ export class IncCloudService implements IncCloudServiceInterface {
         console.log(`[IncCloud] Obtenção completada em ${PerformanceLogger.formatDuration(endTime - startTime)}`);
 
         return regionDevices;
+    }
+
+    async getIncCloudAlarmHistoryList(shopId: number, pageNum: number, pageSize: number, startTime: number, endTime: number): Promise<IncCloudAlarmItem[]> {
+        try {
+            console.log(`[IncCloud] Iniciando requisição para histórico de logs de alarmes`);
+            const requestStartTime = Date.now();
+
+            const response = await this.axiosInstance.request<IncCloudAlarmHistoryList>({
+                method: 'POST',
+                maxBodyLength: Infinity,
+                url: `${this.baseUrl}//alarm/history/list?user_name=${this.userName}&locale=en`,
+                headers: {
+                    'accept': 'application/json',
+                    'apikey': this.apiKey,
+                    'Content-Type': 'application/json',
+                },
+                data: {
+                    shopId: shopId,
+                    pageNum,
+                    pageSize,
+                    startTime,
+                    endTime,
+                    alarmTypeName_en: "Device offline"
+                },
+            });
+
+            const requestEndTime = Date.now();
+            console.log(`[IncCloud] Requisição completada em ${PerformanceLogger.formatDuration(requestEndTime - requestStartTime)}`);
+
+            return response.data.data.historyList;
+        } catch (error) {
+            return this.parseError(error);
+        }
     }
 
     private parseError(error: any): any {

@@ -11,6 +11,7 @@ export class AlarmMapper {
         const model = new AlarmModel();
         model.id = alarm.id.toString();
         model.externalId = alarm.externalId;
+        model.deviceType = alarm.deviceType;
         model.title = alarm.title;
         model.isSolved = alarm.isSolved;
         model.createdAt = alarm.createdAt;
@@ -22,6 +23,7 @@ export class AlarmMapper {
         const entity = new Alarm(
             UUID.fromString(alarmModel.id),
             alarmModel.externalId,
+            alarmModel.deviceType,
             alarmModel.title,
             alarmModel.isSolved,
             alarmModel.createdAt,
@@ -39,6 +41,7 @@ export class AlarmMapper {
         const dto: AlarmResponseDto = {
             id: alarm.id.toString(),
             externalId: alarm.externalId,
+            deviceType: alarm.deviceType,
             title: alarm.title,
             isSolved: alarm.isSolved,
             createdAt: alarm.createdAt,
@@ -62,6 +65,7 @@ export class AlarmCommentMapper {
         const model = new AlarmModel();
         model.id = alarm.id.toString();
         model.externalId = alarm.externalId;
+        model.deviceType = alarm.deviceType;
         model.title = alarm.title;
         model.isSolved = alarm.isSolved;
         model.createdAt = alarm.createdAt;
@@ -73,7 +77,6 @@ export class AlarmCommentMapper {
         return new AlarmComment(
             UUID.fromString(commentModel.id),
             commentModel.text,
-            commentModel.editedAt,
             UUID.fromString(commentModel.alarm.id),
             commentModel.createdAt,
             commentModel.updatedAt,
@@ -84,7 +87,6 @@ export class AlarmCommentMapper {
         return {
             id: comment.id.toString(),
             text: comment.text,
-            editedAt: comment.editedAt,
             createdAt: comment.createdAt,
             updatedAt: comment.updatedAt,
         };
