@@ -31,11 +31,13 @@ export class GetAlarmLogListUseCase {
             const { startAt, endAt } = DateConverter.createRangeDateStgs(dayRange);
             const alarms = await this.wayosService.getAlarmLogListAllPages(parseInt(value), startAt, endAt);
 
-            if (!alarms || alarms.length === 0) {
+            const filteredAlarms = alarms.filter(alarm => alarm.type !== 'dev_offline') || [];
+
+            if (filteredAlarms.length === 0) {
                 return [];
             }
 
-            alarmListFromApi = alarms.map(alarm => ({
+            alarmListFromApi = filteredAlarms.map(alarm => ({
                 externalId: alarm.id,
                 title: alarm.type,
                 deviceType: DeviceType.Router,

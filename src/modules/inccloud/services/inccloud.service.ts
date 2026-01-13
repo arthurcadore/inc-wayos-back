@@ -143,7 +143,7 @@ export class IncCloudService implements IncCloudServiceInterface {
             const response = await this.axiosInstance.request<IncCloudAlarmHistoryList>({
                 method: 'POST',
                 maxBodyLength: Infinity,
-                url: `${this.baseUrl}//alarm/history/list?user_name=${this.userName}&locale=en`,
+                url: `${this.baseUrl}/alarm/history/list?user_name=${this.userName}&locale=en`,
                 headers: {
                     'accept': 'application/json',
                     'apikey': this.apiKey,
