@@ -188,13 +188,13 @@ export class AppController {
     @ApiBearerAuth('access-token')
     @Get('inccloud-alarm-logs')
     async getIncCloudAlarmHistoryList(
-        @Query('shopId') shopId: number,
+        @Query('devSn') devSn: string,
         @Query('pageNum') pageNum: number,
         @Query('pageSize') pageSize: number,
         @Query('daysRange') daysRange: number,
     ): Promise<any[]> {
         const { startAt, endAt } = DateConverter.createRangeDates(daysRange);
         console.log('startAt:', startAt.getTime(), 'endAt:', endAt.getTime());
-        return await this.inccloudService.getIncCloudAlarmHistoryList(shopId, pageNum, pageSize, startAt.getTime(), endAt.getTime());
+        return await this.inccloudService.getIncCloudAlarmHistoryList(devSn, pageNum, pageSize, startAt.getTime(), endAt.getTime());
     }
 }
