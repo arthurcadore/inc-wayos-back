@@ -135,7 +135,7 @@ export class IncCloudService implements IncCloudServiceInterface {
         return regionDevices;
     }
 
-    async getIncCloudAlarmHistoryList(shopId: number, pageNum: number, pageSize: number, startTime: number, endTime: number): Promise<IncCloudAlarmItem[]> {
+    async getIncCloudAlarmHistoryList(devSn: string, pageNum: number, pageSize: number, startTime: number, endTime: number): Promise<IncCloudAlarmItem[]> {
         try {
             console.log(`[IncCloud] Iniciando requisição para histórico de logs de alarmes`);
             const requestStartTime = Date.now();
@@ -150,7 +150,7 @@ export class IncCloudService implements IncCloudServiceInterface {
                     'Content-Type': 'application/json',
                 },
                 data: {
-                    shopId: shopId,
+                    devSn,
                     pageNum,
                     pageSize,
                     startTime,

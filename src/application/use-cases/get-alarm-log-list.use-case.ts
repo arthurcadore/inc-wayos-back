@@ -45,7 +45,7 @@ export class GetAlarmLogListUseCase {
             }));
         } else if (deviceType === DeviceType.Switch || deviceType === DeviceType.AccessPoint) {
             const { startAt, endAt } = DateConverter.createRangeDates(dayRange);
-            const alarms = await this.incCloudService.getIncCloudAlarmHistoryList(parseInt(value), 1, 100, startAt.getTime(), endAt.getTime());
+            const alarms = await this.incCloudService.getIncCloudAlarmHistoryList(value, 1, 100, startAt.getTime(), endAt.getTime());
 
             if (!alarms || alarms.length === 0) {
                 return [];

@@ -26,6 +26,7 @@ export class ViewGlobalUseCase {
         viewGlobalItems.push(
             ...wayosRouterInfos.map((item) => ({
                 inep: item.inep,
+                shopId: shopDevices.find(sd => sd.shopName === item.inep)?.shopId!,
                 city: 'n/d',
                 router: item,
                 switches: [],
@@ -94,7 +95,6 @@ export class ViewGlobalUseCase {
 
         for (const item of shopDevices) {
             const device: IncCloudDevice = {
-                shopId: item.shopId,
                 devType: item.devType,
                 sn: item.devSn,
                 online: item.status === 1,
