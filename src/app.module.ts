@@ -15,6 +15,7 @@ import { GetAlarmLogListUseCase } from './application/use-cases/get-alarm-log-li
 import { GetWayosLastOfflineMomentListUseCase } from './application/use-cases/get-wayos-last-offline-moment-list.use-case';
 import { GetInccloudLastOfflineMomentListUseCase } from './application/use-cases/get-inccloud-last-offline-moment-list.use-case';
 import { AlarmModule } from './modules/alarm/alarm.module';
+import { NetworkTopologyUseCase } from './application/use-cases/network-topology.use-case';
 
 @Module({
     imports: [
@@ -55,6 +56,7 @@ import { AlarmModule } from './modules/alarm/alarm.module';
         GetAlarmLogListUseCase,
         GetWayosLastOfflineMomentListUseCase,
         GetInccloudLastOfflineMomentListUseCase,
+        NetworkTopologyUseCase,
         AppService,
     ]
 })

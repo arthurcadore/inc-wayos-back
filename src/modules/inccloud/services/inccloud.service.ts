@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IncCloudAlarmHistoryList, IncCloudAlarmItem, IncCloudResponseBase, RegionDevice, ShopDevice } from '../dto/inccloud-response.dto';
+import { CommonTopoLinkData, CommonTopoLinkResponse, CommonTopoNode, CommonTopoNodeResponse, IncCloudAlarmHistoryList, IncCloudAlarmItem, IncCloudResponseBase, RegionDevice, ShopDevice } from '../dto/inccloud-response.dto';
 import { IncCloudServiceInterface } from '../interfaces/inccloud-service.interface';
 import axios, { AxiosInstance } from 'axios';
 import axiosRetry from 'axios-retry';
@@ -163,6 +163,54 @@ export class IncCloudService implements IncCloudServiceInterface {
             console.log(`[IncCloud] Requisição completada em ${PerformanceLogger.formatDuration(requestEndTime - requestStartTime)}`);
 
             return response.data.data.historyList;
+        } catch (error) {
+            return this.parseError(error);
+        }
+    }
+
+    async commonTopoNodes(shopId: number): Promise<CommonTopoNode[]> {
+        try {
+            console.log(`[IncCloud] Iniciando requisição para: ${this.baseUrl}/common/topo/nodes`);
+            const startTime = Date.now();
+
+            const response = await this.axiosInstance.request<CommonTopoNodeResponse>({
+                method: 'GET',
+                url: `${this.baseUrl}/common/topo/nodes?user_name=${this.userName}&locale=en&shopId=${shopId}`,
+                headers: {
+                    'accept': 'application/json',
+                    'apikey': this.apiKey,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const endTime = Date.now();
+            console.log(`[IncCloud] Requisição completada em ${PerformanceLogger.formatDuration(endTime - startTime)}`);
+
+            return response.data.data;
+        } catch (error) {
+            return this.parseError(error);
+        }
+    }
+
+    async commonTopoLinks(shopId: number): Promise<CommonTopoLinkData> {
+        try {
+            console.log(`[IncCloud] Iniciando requisição para: ${this.baseUrl}/common/topo/links`);
+            const startTime = Date.now();
+
+            const response = await this.axiosInstance.request<CommonTopoLinkResponse>({
+                method: 'GET',
+                url: `${this.baseUrl}/common/topo/links?user_name=${this.userName}&locale=en&shopId=${shopId}`,
+                headers: {
+                    'accept': 'application/json',
+                    'apikey': this.apiKey,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const endTime = Date.now();
+            console.log(`[IncCloud] Requisição completada em ${PerformanceLogger.formatDuration(endTime - startTime)}`);
+
+            return response.data.data;
         } catch (error) {
             return this.parseError(error);
         }

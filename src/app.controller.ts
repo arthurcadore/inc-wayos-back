@@ -15,6 +15,7 @@ import { DateConverter } from './shared/converters/date-converte';
 import { INC_CLOUD_CONSTANTS } from './modules/inccloud/inc-cloud.constants';
 import type { IncCloudServiceInterface } from './modules/inccloud/interfaces/inccloud-service.interface';
 import { DeviceType } from './domain/object-values/device-type';
+import { NetworkTopologyUseCase } from './application/use-cases/network-topology.use-case';
 
 interface HealthCheckResponse {
     message: string;
@@ -33,6 +34,7 @@ export class AppController {
         private readonly getAlarmLogListUseCase: GetAlarmLogListUseCase,
         private readonly getWayosLastOfflineMomentListUseCase: GetWayosLastOfflineMomentListUseCase,
         private readonly getInccloudLastOfflineMomentListUseCase: GetInccloudLastOfflineMomentListUseCase,
+        private readonly getNetworkTopologyUseCase: NetworkTopologyUseCase,
         @Inject(WAYOS_CONSTANTS.WAYOS_SERVICE)
         private readonly wayosService: WayosServiceInterface,
         @Inject(INC_CLOUD_CONSTANTS.INC_CLOUD_SERVICE)
@@ -196,5 +198,12 @@ export class AppController {
         const { startAt, endAt } = DateConverter.createRangeDates(daysRange);
         console.log('startAt:', startAt.getTime(), 'endAt:', endAt.getTime());
         return await this.inccloudService.getIncCloudAlarmHistoryList(devSn, pageNum, pageSize, startAt.getTime(), endAt.getTime());
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @Get('network-topology/:shopId')
+    async getNetworkTopology(@Param('shopId') shopId: number): Promise<any> {
+        return await this.getNetworkTopologyUseCase.execute(shopId);
     }
 }
