@@ -8,8 +8,8 @@ import { DeviceType, PortConnection, TopologyNode } from './dto/network-topology
 export class NetworkTopologyUseCase {
     routerNode: TopologyNode = {
         id: 'router-1',
-        name: 'Router',
-        model: 'Model XPTO',
+        name: '',
+        model: '',
         type: DeviceType.ROUTER,
         ports: [],
     };

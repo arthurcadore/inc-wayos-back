@@ -172,6 +172,21 @@ export class AppController {
         return this.wayosService.getUserSceneListSummeriredAllPages();
     }
 
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @Get('network-topology/:shopId')
+    async getNetworkTopology(@Param('shopId') shopId: number): Promise<any> {
+        return await this.getNetworkTopologyUseCase.execute(shopId);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @Get('wayos-device-info/:sn')
+    async getWayosDeviceInfo(@Param('sn') sn: string): Promise<any> {
+        const deviceInfo = await this.wayosService.getDeviceInfo(sn);
+        return deviceInfo.data;
+    }
+
     // Temporário: endpoint para teste direto dos logs de alarme Wayos
 
     @UseGuards(JwtAuthGuard)
@@ -198,12 +213,5 @@ export class AppController {
         const { startAt, endAt } = DateConverter.createRangeDates(daysRange);
         console.log('startAt:', startAt.getTime(), 'endAt:', endAt.getTime());
         return await this.inccloudService.getIncCloudAlarmHistoryList(devSn, pageNum, pageSize, startAt.getTime(), endAt.getTime());
-    }
-
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth('access-token')
-    @Get('network-topology/:shopId')
-    async getNetworkTopology(@Param('shopId') shopId: number): Promise<any> {
-        return await this.getNetworkTopologyUseCase.execute(shopId);
     }
 }
