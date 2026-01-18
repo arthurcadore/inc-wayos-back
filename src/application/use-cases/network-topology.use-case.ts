@@ -6,13 +6,7 @@ import { DeviceType, PortConnection, TopologyNode } from './dto/network-topology
 
 @Injectable()
 export class NetworkTopologyUseCase {
-    routerNode: TopologyNode = {
-        id: 'router-1',
-        name: '',
-        model: '',
-        type: DeviceType.ROUTER,
-        ports: [],
-    };
+    routerNode: TopologyNode;
 
     constructor(
         @Inject(INC_CLOUD_CONSTANTS.INC_CLOUD_SERVICE)
@@ -27,6 +21,14 @@ export class NetworkTopologyUseCase {
         const switchDevices = devices.filter(node => node.type === 'switch');
         const accessPointDevices = devices.filter(node => node.type === 'cloudap');
         const stationDevices = devices.filter(node => node.type === 'station');
+
+        this.routerNode = {
+            id: 'router-1',
+            name: '',
+            model: '',
+            type: DeviceType.ROUTER,
+            ports: [],
+        };
 
         const switchNodes: TopologyNode[] = switchDevices.map(device => ({
             id: device.identity.toString(),
