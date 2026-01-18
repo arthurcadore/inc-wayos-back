@@ -102,6 +102,7 @@ export class ViewGlobalUseCase {
                 firstOnlineTime: item.firstOnlineTime,
                 aliasName: item.aliasName,
                 devIp: 'n/d',
+                devMac: 'n/d',
             };
 
             const inep = item.shopName.replaceAll(' ', '').toUpperCase();
@@ -149,6 +150,7 @@ export class ViewGlobalUseCase {
                     const regionDevice = regionDevices.find(rd => rd.devSn === sw.sn);
                     if (regionDevice) {
                         sw.devIp = regionDevice.devIp;
+                        sw.devMac = regionDevice.macAddr;
                     }
                 });
 
@@ -156,6 +158,7 @@ export class ViewGlobalUseCase {
                     const regionDevice = regionDevices.find(rd => rd.devSn === ap.sn);
                     if (regionDevice) {
                         ap.devIp = regionDevice.devIp;
+                        ap.devMac = regionDevice.macAddr;
                     }
                 });
             }
