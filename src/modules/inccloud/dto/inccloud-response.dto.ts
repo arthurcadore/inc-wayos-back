@@ -254,3 +254,35 @@ export interface CommonTopoLinkResponse {
     message: string;
     data: CommonTopoLinkData;
 }
+
+/// ### User Shop Nesting DTOs ### ///
+
+export interface ShopsInfo {
+    regionId: string;
+    regionName: string;
+    shopName: string;
+    shopId: number;
+    customType: number;
+    type: string;
+    devCnt: {
+        [propName: string]: number[];
+    };
+    devTypes: string[];
+}
+
+export interface UserShopNestingItem {
+    title: string;
+    id: number;
+    parentId: number | null;
+    regionName: string;
+    type: string;
+    children: UserShopNestingItem[];
+    shopsInfo: ShopsInfo[];
+    devType: any[];
+}
+
+export interface UserShopNestingResponse {
+    code: number;
+    message: string;
+    data: UserShopNestingItem;
+}

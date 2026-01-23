@@ -16,6 +16,7 @@ import { GetWayosLastOfflineMomentListUseCase } from './application/use-cases/ge
 import { GetInccloudLastOfflineMomentListUseCase } from './application/use-cases/get-inccloud-last-offline-moment-list.use-case';
 import { AlarmModule } from './modules/alarm/alarm.module';
 import { NetworkTopologyUseCase } from './application/use-cases/network-topology.use-case';
+import { GetUserShopNestingUseCase } from './application/use-cases/get-user-shop-nesting.use0case';
 
 @Module({
     imports: [
@@ -57,6 +58,7 @@ import { NetworkTopologyUseCase } from './application/use-cases/network-topology
         GetWayosLastOfflineMomentListUseCase,
         GetInccloudLastOfflineMomentListUseCase,
         NetworkTopologyUseCase,
+        GetUserShopNestingUseCase,
         AppService,
     ]
 })

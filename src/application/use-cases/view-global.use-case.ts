@@ -13,7 +13,7 @@ export class ViewGlobalUseCase {
         @Inject(WAYOS_CONSTANTS.WAYOS_SERVICE)
         private readonly wayosService: WayosServiceInterface,
         @Inject(INC_CLOUD_CONSTANTS.INC_CLOUD_SERVICE)
-        private readonly incCloudService: IncCloudServiceInterface
+        private readonly incCloudService: IncCloudServiceInterface,
     ) { }
 
     async execute(): Promise<ViewGlobalUseCaseOutput> {
@@ -27,6 +27,7 @@ export class ViewGlobalUseCase {
             ...wayosRouterInfos.map((item) => ({
                 inep: item.inep,
                 shopId: shopDevices.find(sd => sd.shopName === item.inep)?.shopId!,
+                installedDevices: false,
                 city: 'n/d',
                 router: item,
                 switches: [],
@@ -36,11 +37,34 @@ export class ViewGlobalUseCase {
 
         this.parseDeviceItems(shopDevices, viewGlobalItems);
         await this.updateRegionName(viewGlobalItems);
+        await this.applyInstalledDevices(viewGlobalItems);
 
         const endTime = Date.now();
         console.log(`Duração total da operação: ${PerformanceLogger.formatDuration(endTime - startTime)}`);
 
         return this.parseOutput(viewGlobalItems);
+    }
+
+    // Marca os sites que possuem dispositivos instalados
+    async applyInstalledDevices(viewGlobalItems: ViewGlobalItem[]): Promise<void> {
+        const response = await this.incCloudService.getUserShopNesting();
+
+        if (!response) {
+            return;
+        }
+
+        const branch = response.children.find(item => item.title === 'EACE');
+
+        for (const state of branch?.children || []) {
+            for (const city of state.children) {
+                for (const shop of city.shopsInfo) {
+                    const targetItem = viewGlobalItems.find(item => item.shopId === shop.shopId);
+                    if (targetItem) {
+                        targetItem.installedDevices = true;
+                    }
+                }
+            }
+        }
     }
 
     async getIncCloudDevices(): Promise<ShopDevice[]> {

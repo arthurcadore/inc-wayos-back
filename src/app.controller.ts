@@ -16,6 +16,7 @@ import { INC_CLOUD_CONSTANTS } from './modules/inccloud/inc-cloud.constants';
 import type { IncCloudServiceInterface } from './modules/inccloud/interfaces/inccloud-service.interface';
 import { DeviceType } from './domain/object-values/device-type';
 import { NetworkTopologyUseCase } from './application/use-cases/network-topology.use-case';
+import { GetUserShopNestingUseCase } from './application/use-cases/get-user-shop-nesting.use0case';
 
 interface HealthCheckResponse {
     message: string;
@@ -35,6 +36,7 @@ export class AppController {
         private readonly getWayosLastOfflineMomentListUseCase: GetWayosLastOfflineMomentListUseCase,
         private readonly getInccloudLastOfflineMomentListUseCase: GetInccloudLastOfflineMomentListUseCase,
         private readonly getNetworkTopologyUseCase: NetworkTopologyUseCase,
+        private readonly getUserShopNestingUseCase: GetUserShopNestingUseCase,
         @Inject(WAYOS_CONSTANTS.WAYOS_SERVICE)
         private readonly wayosService: WayosServiceInterface,
         @Inject(INC_CLOUD_CONSTANTS.INC_CLOUD_SERVICE)
@@ -213,5 +215,12 @@ export class AppController {
         const { startAt, endAt } = DateConverter.createRangeDates(daysRange);
         console.log('startAt:', startAt.getTime(), 'endAt:', endAt.getTime());
         return await this.inccloudService.getIncCloudAlarmHistoryList(devSn, pageNum, pageSize, startAt.getTime(), endAt.getTime());
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @Get('inccloud-user-shop-nesting')
+    async getUserShopNesting(@Query('filteredBy') filteredBy: string): Promise<any> {
+        return await this.getUserShopNestingUseCase.execute(filteredBy);
     }
 }

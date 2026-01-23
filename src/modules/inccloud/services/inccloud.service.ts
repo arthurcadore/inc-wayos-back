@@ -1,6 +1,18 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { CommonTopoLinkData, CommonTopoLinkResponse, CommonTopoNode, CommonTopoNodeResponse, IncCloudAlarmHistoryList, IncCloudAlarmItem, IncCloudResponseBase, RegionDevice, ShopDevice } from '../dto/inccloud-response.dto';
+import {
+    CommonTopoLinkData,
+    CommonTopoLinkResponse,
+    CommonTopoNode,
+    CommonTopoNodeResponse,
+    IncCloudAlarmHistoryList,
+    IncCloudAlarmItem,
+    IncCloudResponseBase,
+    RegionDevice,
+    ShopDevice,
+    UserShopNestingItem,
+    UserShopNestingResponse,
+} from '../dto/inccloud-response.dto';
 import { IncCloudServiceInterface } from '../interfaces/inccloud-service.interface';
 import axios, { AxiosInstance } from 'axios';
 import axiosRetry from 'axios-retry';
@@ -44,6 +56,30 @@ export class IncCloudService implements IncCloudServiceInterface {
                 console.log(`[IncCloud] Tentativa ${retryCount} após erro: ${error.message}`);
             }
         });
+    }
+
+    async getUserShopNesting(): Promise<UserShopNestingItem> {
+        try {
+            console.log(`[IncCloud] Iniciando requisição para: ${this.baseUrl}/user/shop?locale=en&nesting=true`);
+            const startTime = Date.now();
+
+            const response = await this.axiosInstance.request<UserShopNestingResponse>({
+                method: 'GET',
+                url: `${this.baseUrl}/user/shop?user_name=${this.userName}&locale=en&nesting=true`,
+                headers: {
+                    'accept': 'application/json',
+                    'apikey': this.apiKey,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const endTime = Date.now();
+            console.log(`[IncCloud] Requisição completada em ${PerformanceLogger.formatDuration(endTime - startTime)}`);
+
+            return response.data.data;
+        } catch (error) {
+            return this.parseError(error);
+        }
     }
 
     async getShopDevicePage(): Promise<ShopDevice[]> {
