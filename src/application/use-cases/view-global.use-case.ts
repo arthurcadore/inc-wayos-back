@@ -202,6 +202,9 @@ export class ViewGlobalUseCase {
             totalAps: viewGlobalItems.reduce((sum, item) => sum + item.aps.length, 0),
             onlineAps: viewGlobalItems.reduce((sum, item) => sum + item.aps.filter((ap) => ap.online).length, 0),
 
+            totalInstalledSites: viewGlobalItems.filter(item => item.installedDevices).length,
+            totalUninstalledSites: viewGlobalItems.filter(item => !item.installedDevices).length,
+
             data: viewGlobalItems,
         };
 

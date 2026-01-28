@@ -42,5 +42,8 @@ export interface ViewGlobalUseCaseOutput {
     totalAps: number;
     onlineAps: number;
 
+    totalInstalledSites: number;
+    totalUninstalledSites: number;
+
     data: ViewGlobalItem[];
 }
