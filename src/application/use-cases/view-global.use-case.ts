@@ -5,7 +5,7 @@ import type { IncCloudServiceInterface } from 'src/modules/inccloud/interfaces/i
 import type { WayosServiceInterface } from 'src/modules/wayos/interfaces/wayos-service.interface';
 import { WAYOS_CONSTANTS } from 'src/modules/wayos/wayos.constants';
 import { PerformanceLogger } from 'src/shared/utils/performance-logger';
-import { IncCloudDevice, ViewGlobalItem, ViewGlobalUseCaseOutput, WayosRouterInfo } from './dto/view-global';
+import { backupScriptStatusParser, IncCloudDevice, ViewGlobalItem, ViewGlobalUseCaseOutput, WayosRouterInfo } from './dto/view-global';
 
 @Injectable()
 export class ViewGlobalUseCase {
@@ -101,6 +101,8 @@ export class ViewGlobalUseCase {
             inep: item.scene.name,
             sceneId: item.scene_id,
             sn: item.scene.sn,
+            simetBox: item.simet_label,
+            backupScriptStatus: backupScriptStatusParser(item.backup_script_status),
             model: item.model,
             wanIp: item.wan_ip,
             lanIp: item.lan_ip,

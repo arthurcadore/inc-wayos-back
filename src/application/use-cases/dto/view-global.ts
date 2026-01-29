@@ -1,7 +1,26 @@
+export function backupScriptStatusParser(value: number): string {
+    switch (value) {
+        case 0:
+            return 'Desconhecido';
+        case 1:
+            return 'Sincronizado';
+        case 2:
+            return 'Não Sincronizado';
+        case 3:
+            return 'Falha de resolução';
+        case 4:
+            return 'Falha de Download';
+        default:
+            return 'n/d';
+    }
+}
+
 export interface WayosRouterInfo {
     inep: string;
     sceneId: number;
     sn: string;
+    simetBox: string | null;
+    backupScriptStatus : string | null;
     model: string | null;
     wanIp: string | null;
     lanIp: string | null;

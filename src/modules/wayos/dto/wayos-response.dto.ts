@@ -151,6 +151,7 @@ export interface WayosGetUserSceneSummeriredItem {
     group_id: number;
     acs_template: number;
     simet_label: string;
+    backup_script_status: number;
     sort_weight: number;
     latest_firmware: {
         id: number;
