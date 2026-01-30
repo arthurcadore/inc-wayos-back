@@ -193,6 +193,13 @@ export class AppController {
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('access-token')
+    @Get('wayos-device-load/:sn')
+    async deviceLoad(@Param('sn') sn: string): Promise<any> {
+        return await this.wayosService.deviceLoad(sn);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
     @Get('wayos-alarm-logs/:sceneId/:daysRange')
     async getWayosAlarmLogs(
         @Param('sceneId') sceneId: number,

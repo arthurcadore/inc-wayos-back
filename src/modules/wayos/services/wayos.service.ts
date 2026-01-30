@@ -50,6 +50,41 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
         });
     }
 
+    async deviceLoad(sn: string): Promise<any> {
+        try {
+            console.log(`[Wayos] Iniciando requisição para: ${this.baseUrl}/open-api/v1/device/load`);
+            const startTime = Date.now();
+
+            const body = {
+                request_id: this.generateRequestId(),
+                sn,
+            };
+            const timestamp = this.getTimestamp();
+            const signature = this.buildSignature(timestamp, body);
+            const headers = {
+                'Content-Type': 'application/json',
+                'X-App-Id': this.appId,
+                'X-Timestamp': timestamp,
+                'X-Signature': signature
+            };
+
+            const response = await this.axiosInstance.request<any>({
+                method: 'POST',
+                maxBodyLength: Infinity,
+                url: `${this.baseUrl}/open-api/v1/device/load`,
+                headers,
+                data: body,
+            });
+
+            const endTime = Date.now();
+            console.log(`[Wayos] Requisição completada em ${PerformanceLogger.formatDuration(endTime - startTime)}`);
+
+            return response.data;
+        } catch (error) {
+            return this.parseError(error);
+        }
+    }
+
     async getUserSceneListSummerired(page: number, limit: number): Promise<WayosGetUserSceneListSummeriredResponse> {
         try {
             console.log(`[Wayos] Iniciando requisição para: ${this.baseUrl}/open-api/v1/device/list`);
