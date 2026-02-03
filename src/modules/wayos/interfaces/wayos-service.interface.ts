@@ -1,6 +1,7 @@
 import {
     WayosAlarmLogItem,
     WayosAlarmLogResponse,
+    WayosDeviceLoadItem,
     WayosGetDeviceInfoResponse,
     WayosGetDeviceOnlineUserResponse,
     WayosGetUserSceneListItem,
@@ -10,7 +11,7 @@ import {
 } from '../dto/wayos-response.dto';
 
 export interface WayosServiceInterface {
-    deviceLoad(sn: string): Promise<any>;
+    deviceLoadList(sn: string, startAt: string, endAt: string): Promise<WayosDeviceLoadItem[]>;
     getUserSceneListSummerired(page: number, limit: number): Promise<WayosGetUserSceneListSummeriredResponse>;
     getUserSceneListSummeriredAllPages(): Promise<WayosGetUserSceneSummeriredItem[]>;
     getUserSceneList(page: number, limit: number): Promise<WayosGetUserSceneListResponse>;

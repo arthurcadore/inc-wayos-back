@@ -1,5 +1,27 @@
 // Wayos Device Info DTOs
 
+export interface WayosDeviceLoadItem {
+    stat_at: string; // date no formato "YYYY-MM-DD HH:mm:ss"
+    sn: string;
+    cpu_m: string; // Array<{i: number, u: number, t: number}> represented as string
+    mem_m: string; // Objeto {t: number, y: number} represented as string
+    disk_m: string;
+    up_rate: number;
+    down_rate: number;
+    up_flow: number;
+    down_flow: number;
+    retrans_rate: number;
+    ping: string;
+}
+
+export interface WayosDeviceLoadListResponse {
+    code: number;
+    msg: string;
+    data: {
+        load: WayosDeviceLoadItem[];
+    };
+}
+
 export interface WayosGetDeviceInfo {
     login_at: string;
     logout_at: string;
@@ -58,7 +80,7 @@ export interface WayosGetDeviceOnlineUser {
     auth_type: number;
     conn_type: number;
     down_flow: number;
-    ip:string;
+    ip: string;
     login_at: number;
     logout_at: number;
     mac: string;

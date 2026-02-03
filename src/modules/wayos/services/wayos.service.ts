@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import {
     WayosAlarmLogItem,
     WayosAlarmLogResponse,
+    WayosDeviceLoadItem,
+    WayosDeviceLoadListResponse,
     WayosGetDeviceInfoResponse,
     WayosGetDeviceOnlineUserResponse,
     WayosGetUserSceneListItem,
@@ -50,13 +52,15 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
         });
     }
 
-    async deviceLoad(sn: string): Promise<any> {
+    async deviceLoadList(sn: string, startAt: string, endAt: string): Promise<WayosDeviceLoadItem[]> {
         try {
-            console.log(`[Wayos] Iniciando requisição para: ${this.baseUrl}/open-api/v1/device/load`);
+            console.log(`[Wayos] Iniciando requisição para: ${this.baseUrl}/open-api/v1/device-load/list`);
             const startTime = Date.now();
 
             const body = {
                 request_id: this.generateRequestId(),
+                start_at: startAt,
+                end_at: endAt,
                 sn,
             };
             const timestamp = this.getTimestamp();
@@ -65,13 +69,13 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
                 'Content-Type': 'application/json',
                 'X-App-Id': this.appId,
                 'X-Timestamp': timestamp,
-                'X-Signature': signature
+                'X-Signature': signature,
             };
 
-            const response = await this.axiosInstance.request<any>({
+            const response = await this.axiosInstance.request<WayosDeviceLoadListResponse>({
                 method: 'POST',
                 maxBodyLength: Infinity,
-                url: `${this.baseUrl}/open-api/v1/device/load`,
+                url: `${this.baseUrl}/open-api/v1/device-load/list`,
                 headers,
                 data: body,
             });
@@ -79,7 +83,7 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
             const endTime = Date.now();
             console.log(`[Wayos] Requisição completada em ${PerformanceLogger.formatDuration(endTime - startTime)}`);
 
-            return response.data;
+            return response.data.data.load;
         } catch (error) {
             return this.parseError(error);
         }

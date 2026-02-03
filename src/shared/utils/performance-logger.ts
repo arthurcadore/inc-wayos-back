@@ -22,6 +22,26 @@ export class PerformanceLogger {
     }
 
     /**
+     * @description Converte um valor de tamanho em bytes para um formato legível (Bytes, KB, MB, GB).
+     * @param value O tamanho em bytes.
+     * @returns Uma string representando o tamanho dos dados em Bytes, KB, MB ou GB.
+     */
+    public static bytesSize(value: number): string {
+        if (value < 1024) {
+            return `${value} Bytes`;
+        } else if (value < 1024 * 1024) {
+            const dataSizeInKB = (value / 1024).toFixed(2);
+            return `${dataSizeInKB} KB`;
+        } else if (value < 1024 * 1024 * 1024) {
+            const dataSizeInMB = (value / (1024 * 1024)).toFixed(2);
+            return `${dataSizeInMB} MB`;
+        } else {
+            const dataSizeInGB = (value / (1024 * 1024 * 1024)).toFixed(2);
+            return `${dataSizeInGB} GB`;
+        }
+    }
+
+    /**
      * @description Calcula e exibe o tamanho dos dados fornecidos no console em um formato legível (Bytes, KB, MB, GB).
      * @param value Os dados cujo tamanho deve ser calculado.
      * @param name O nome dos dados para exibição no console.

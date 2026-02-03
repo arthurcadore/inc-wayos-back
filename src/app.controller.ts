@@ -17,6 +17,7 @@ import type { IncCloudServiceInterface } from './modules/inccloud/interfaces/inc
 import { DeviceType } from './domain/object-values/device-type';
 import { NetworkTopologyUseCase } from './application/use-cases/network-topology.use-case';
 import { GetUserShopNestingUseCase } from './application/use-cases/get-user-shop-nesting.use0case';
+import { GetLifelineDataUseCase } from './application/use-cases/get-lifeline-data.use-case';
 
 interface HealthCheckResponse {
     message: string;
@@ -37,6 +38,7 @@ export class AppController {
         private readonly getInccloudLastOfflineMomentListUseCase: GetInccloudLastOfflineMomentListUseCase,
         private readonly getNetworkTopologyUseCase: NetworkTopologyUseCase,
         private readonly getUserShopNestingUseCase: GetUserShopNestingUseCase,
+        private readonly getLifelineDataUseCase: GetLifelineDataUseCase,
         @Inject(WAYOS_CONSTANTS.WAYOS_SERVICE)
         private readonly wayosService: WayosServiceInterface,
         @Inject(INC_CLOUD_CONSTANTS.INC_CLOUD_SERVICE)
@@ -193,9 +195,13 @@ export class AppController {
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('access-token')
-    @Get('wayos-device-load/:sn')
-    async deviceLoad(@Param('sn') sn: string): Promise<any> {
-        return await this.wayosService.deviceLoad(sn);
+    @Get('wayos-device-load-list/:sn/:daysRange')
+    async deviceLoadList(
+        @Param('sn') sn: string,
+        @Param('daysRange') daysRange: number,
+    ): Promise<any> {
+        const { startAt, endAt } = DateConverter.createRangeDateStgs(daysRange);
+        return await this.wayosService.deviceLoadList(sn, startAt, endAt);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -229,5 +235,16 @@ export class AppController {
     @Get('inccloud-user-shop-nesting')
     async getUserShopNesting(@Query('filteredBy') filteredBy: string): Promise<any> {
         return await this.getUserShopNestingUseCase.execute(filteredBy);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access-token')
+    @Get('lifeline-data/sn/:sn/days-range/:daysRange')
+    async getLifelineData(
+        @Param('sn') sn: string,
+        @Param('daysRange') daysRange: number,
+    ): Promise<any> {
+        await delay(1000);
+        return await this.getLifelineDataUseCase.execute(sn, daysRange);
     }
 }

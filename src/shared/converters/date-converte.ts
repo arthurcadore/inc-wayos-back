@@ -57,4 +57,10 @@ export class DateConverter {
         startAtDate.setDate(startAtDate.getDate() - daysRange);
         return { startAt: startAtDate, endAt: endAtDate };
     }
+
+    public static subtractHoursFromNow(hours: number): Date {
+        const date = new Date();
+        date.setHours(date.getHours() - hours);
+        return date;
+    }
 }
