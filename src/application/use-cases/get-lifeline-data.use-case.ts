@@ -12,10 +12,14 @@ export class GetLifelineDataUseCase {
     ) {}
 
     async execute(sn: string, daysRange: number): Promise<LifelineItem[]> {
-        const { startAt, endAt } = DateConverter.createRangeDateStgs(daysRange);
-        const response = await this.wayosService.deviceLoadList(sn, startAt, endAt);
+        const { startAt, endAt } = DateConverter.createRangeDates(daysRange);
+        startAt.setMinutes(0, 0, 0); // Ajusta para o início da hora
+        const startAtStr = DateConverter.toISO8601(startAt);
+        const endAtStr = DateConverter.toISO8601(endAt);
 
-        const result = response.map(item => {
+        const response = await this.wayosService.deviceLoadList(sn, startAtStr, endAtStr);
+
+        const mappedData = response.map(item => {
             const [cpuM]: CpuM[] = JSON.parse(item.cpu_m);
             const memM: MemM = JSON.parse(item.mem_m);
             return {
@@ -28,10 +32,8 @@ export class GetLifelineDataUseCase {
             };
         });
 
-        // Implementar os 'gaps' na linha do tempo quando não houver dados e inserir itens do tipo vermelho nesses intervalos.
-        // O tempo entre cada item é sempre de 5 minutos.
-        // Considere o startAt e endAt para determinar os intervalos faltantes.
-
+        // Preenche as lacunas com itens vermelhos em intervalos de 15 minutos
+        const result = this.fillTimelineGaps(mappedData, startAtStr, endAtStr);
 
         return result;
     }
@@ -44,6 +46,91 @@ export class GetLifelineDataUseCase {
         } else {
             return LifelineItemType.Green;
         }
+    }
+
+    /**
+     * Parseia um timestamp no formato "YYYY-MM-DD HH:mm:ss" para Date
+     */
+    private parseTimestamp(timestamp: string): Date {
+        const [datePart, timePart] = timestamp.split(' ');
+        const [year, month, day] = datePart.split('-').map(Number);
+        const [hours, minutes, seconds] = timePart.split(':').map(Number);
+        return new Date(year, month - 1, day, hours, minutes, seconds);
+    }
+
+    /**
+     * Formata um objeto Date para o formato "YYYY-MM-DD HH:mm:ss"
+     */
+    private formatTimestamp(date: Date): string {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }1
+
+    /**
+     * Cria um item vermelho (offline) com valores zerados
+     */
+    private createRedLifelineItem(timestamp: string): LifelineItem {
+        return {
+            type: LifelineItemType.Red,
+            startAt: timestamp,
+            cpu: '0%',
+            mem: '0%',
+            up: '0 B',
+            down: '0 B',
+        };
+    }
+
+    /**
+     * Gera todos os timestamps esperados em intervalos de 15 minutos
+     */
+    private generateExpectedTimestamps(startAt: string, endAt: string): string[] {
+        const timestamps: string[] = [];
+        const start = this.parseTimestamp(startAt);
+        const end = this.parseTimestamp(endAt);
+
+        const current = new Date(start);
+
+        while (current <= end) {
+            timestamps.push(this.formatTimestamp(current));
+            current.setMinutes(current.getMinutes() + 15);
+        }
+
+        return timestamps;
+    }
+
+    /**
+     * Preenche as lacunas na linha do tempo com itens vermelhos
+     */
+    private fillTimelineGaps(
+        data: LifelineItem[],
+        startAt: string,
+        endAt: string,
+    ): LifelineItem[] {
+        // Cria um mapa dos dados existentes por timestamp
+        const dataMap = new Map<string, LifelineItem>();
+        data.forEach(item => {
+            dataMap.set(item.startAt, item);
+        });
+
+        // Gera todos os timestamps esperados
+        const expectedTimestamps = this.generateExpectedTimestamps(startAt, endAt);
+
+        // Preenche lacunas
+        const result: LifelineItem[] = [];
+        expectedTimestamps.forEach(timestamp => {
+            if (dataMap.has(timestamp)) {
+                result.push(dataMap.get(timestamp)!);
+            } else {
+                result.push(this.createRedLifelineItem(timestamp));
+            }
+        });
+
+        return result;
     }
 }
 
