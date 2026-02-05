@@ -23,12 +23,12 @@ export class GetLifelineDataUseCase {
             const [cpuM]: CpuM[] = JSON.parse(item.cpu_m);
             const memM: MemM = JSON.parse(item.mem_m);
             return {
-                type: this.processData(item.up_rate, item.down_rate),
+                type: this.processData(item.up_flow, item.down_flow),
                 startAt: item.stat_at,
                 cpu: `${cpuM.u}%`,
                 mem: memM.t === 0 ? '0%' : `${((memM.u / memM.t) * 100).toFixed(2)}%`,
-                up: PerformanceLogger.bytesSize(item.up_rate),
-                down: PerformanceLogger.bytesSize(item.down_rate),
+                up: PerformanceLogger.bytesSize(item.up_flow),
+                down: PerformanceLogger.bytesSize(item.down_flow),
             };
         });
 
@@ -38,10 +38,10 @@ export class GetLifelineDataUseCase {
         return result;
     }
 
-    private processData(upRate: number, downRate: number): LifelineItemType {
-        const totalRate = upRate + downRate;
+    private processData(upFlow: number, downFlow: number): LifelineItemType {
+        const totalFlow = upFlow + downFlow;
 
-        if (totalRate < 1048576) {
+        if (totalFlow < 1048576) {
             return LifelineItemType.Yellow;
         } else {
             return LifelineItemType.Green;
