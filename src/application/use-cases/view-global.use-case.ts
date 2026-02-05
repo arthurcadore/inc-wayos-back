@@ -108,6 +108,7 @@ export class ViewGlobalUseCase {
             lanIp: item.lan_ip,
             lanMac: item.lan_mac,
             online: item.online,
+            lastOnlineTime: item.logout_at,
         }));
 
         PerformanceLogger.logDataSize(wayosRouterInfos, 'WayOS Router Summarired');

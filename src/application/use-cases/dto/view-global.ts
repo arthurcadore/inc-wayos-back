@@ -26,6 +26,7 @@ export interface WayosRouterInfo {
     lanIp: string | null;
     lanMac: string | null;
     online: boolean;
+    lastOnlineTime: string | null;
 }
 
 export interface IncCloudDevice {
