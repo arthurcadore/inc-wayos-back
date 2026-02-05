@@ -35,6 +35,9 @@ export class GetLifelineDataUseCase {
         // Preenche as lacunas com itens vermelhos em intervalos de 15 minutos
         const result = this.fillTimelineGaps(mappedData, startAtStr, endAtStr);
 
+        // Remova os últimos dois ítens da lista
+        result.splice(-2, 2);
+
         return result;
     }
 
