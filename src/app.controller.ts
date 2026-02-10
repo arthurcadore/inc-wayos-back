@@ -103,56 +103,12 @@ export class AppController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('access-token')
     @Get('alarms/device-type/:deviceType/value/:value/day-range/:dayRange')
-    @ApiOperation({
-        summary: 'Obtem a lista de logs de alarmes',
-        description: 'Retorna uma lista de logs de alarmes para a cena especificada, filtrada por tipo de dispositivo e valor adicional.'
-    })
-    @ApiParam({
-        name: 'deviceType',
-        description: 'Tipo de dispositivo (router, switch ou ap)',
-        enum: ['router', 'switch', 'ap'],
-        required: true,
-        example: 'router'
-    })
-    @ApiParam({
-        name: 'value',
-        description: 'Valor adicional para filtrar os logs de alarmes',
-        required: true,
-        example: '12345'
-    })
-    @ApiParam({
-        name: 'dayRange',
-        description: 'Número de dias para o intervalo de busca (padrão é 15)',
-        required: false,
-        example: 15
-    })
-    @ApiOkResponse({
-        description: 'Lista de logs de alarmes obtida com sucesso',
-        schema: {
-            type: 'array',
-            items: { type: 'object' }
-        }
-    })
-    @ApiResponse({
-        status: 400,
-        description: 'Bad request - Invalid parameters'
-    })
-    @ApiResponse({
-        status: 401,
-        description: 'Unauthorized - Invalid or missing authentication token'
-    })
-    @ApiResponse({
-        status: 500,
-        description: 'Internal server error'
-    })
     async getAlarmLogs(
         @Param('deviceType') deviceType: DeviceType,
         @Param('value') value: any,
-        @Param('dayRange') dayRange: number = 15,
-        @Response() res: any
+        @Param('dayRange') dayRange: number,
     ): Promise<any> {
-        const alarms = await this.getAlarmLogListUseCase.execute({ deviceType, value, dayRange });
-        res.status(200).json(alarms);
+        return await this.getAlarmLogListUseCase.execute({ deviceType, value, dayRange });
     }
 
     @UseGuards(JwtAuthGuard)

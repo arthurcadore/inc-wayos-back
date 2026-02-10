@@ -43,16 +43,15 @@ export class Alarm {
         return this._updatedAt;
     }
 
-    static create(externalId: string, deviceType: DeviceType, title: string): Alarm {
-        const now = new Date();
+    static create(externalId: string, deviceType: DeviceType, title: string, createAt: Date): Alarm {
         return new Alarm(
             UUID.generate(),
             externalId,
             deviceType,
             title,
             false,
-            now,
-            now,
+            createAt,
+            createAt,
             [],
         );
     }
@@ -68,7 +67,7 @@ export class Alarm {
             throw new Error("Não é possível adicionar comentários a um alarme resolvido.");
         }
 
-        if (this._comments.find(c => c.id.toString() === comment.id.toString())) {
+        if (this._comments.some(c => c.id.toString() === comment.id.toString())) {
             throw new Error("Comentário já existe neste alarme.");
         }
 

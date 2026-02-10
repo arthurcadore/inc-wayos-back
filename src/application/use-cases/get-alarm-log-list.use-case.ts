@@ -29,15 +29,14 @@ export class GetAlarmLogListUseCase {
 
         if (deviceType === DeviceType.Router) {
             const { startAt, endAt } = DateConverter.createRangeDateStgs(dayRange);
-            const alarms = await this.wayosService.getAlarmLogListAllPages(parseInt(value), startAt, endAt);
+            const alarms = await this.wayosService.getAlarmLogListAllPages(Number.parseInt(value), startAt, endAt);
+            const onlyOfflineAlarms = alarms.filter(alarm => alarm.type === 'dev_offline') || [];
 
-            const filteredAlarms = alarms.filter(alarm => alarm.type !== 'dev_offline') || [];
-
-            if (filteredAlarms.length === 0) {
+            if (onlyOfflineAlarms.length === 0) {
                 return [];
             }
 
-            alarmListFromApi = filteredAlarms.map(alarm => ({
+            alarmListFromApi = onlyOfflineAlarms.map(alarm => ({
                 externalId: alarm.id,
                 title: alarm.type,
                 deviceType: DeviceType.Router,
@@ -65,16 +64,17 @@ export class GetAlarmLogListUseCase {
 
         for (const alarmData of alarmListFromApi) {
             const existingAlarm = await this.alarmRepository.findByExternalId(alarmData.externalId);
-            if (!existingAlarm) {
+            if (existingAlarm) {
+                alarms.push(existingAlarm);
+            } else {
                 const newAlarm = Alarm.create(
                     alarmData.externalId,
                     alarmData.deviceType,
                     alarmData.title,
+                    alarmData.createAt,
                 );
                 await this.alarmRepository.save(newAlarm);
                 alarms.push(newAlarm);
-            } else {
-                alarms.push(existingAlarm!);
             }
 
         }

@@ -215,9 +215,6 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
 
     async getDeviceInfo(sn: string): Promise<WayosGetDeviceInfoResponse> {
         try {
-            // console.log(`[Wayos] Iniciando requisição para: ${this.baseUrl}/open-api/v1/device/info`);
-            // const startTime = Date.now();
-
             const body = {
                 request_id: this.generateRequestId(),
                 sn
@@ -237,9 +234,6 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
                 headers,
                 data: body,
             });
-
-            // const endTime = Date.now();
-            // console.log(`[Wayos] Requisição completada em ${PerformanceLogger.formatDuration(endTime - startTime)}`);
 
             return response.data;
         } catch (error) {
@@ -283,9 +277,6 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
 
     async getAlarmLogList(sceneId: number, page: number, limit: number, startAt: string, endAt: string): Promise<WayosAlarmLogResponse> {
         try {
-            // console.log(`[Wayos] Iniciando requisição para: ${this.baseUrl}/open-api/v1/alarm/log/list`);
-            // const startTime = Date.now();
-
             const body = {
                 request_id: this.generateRequestId(),
                 scene_id: sceneId,
@@ -309,10 +300,6 @@ export class WayosService extends WayosBaseService implements WayosServiceInterf
                 headers,
                 data: body,
             });
-
-            // const endTime = Date.now();
-            // console.log(`[Wayos] Requisição completada em ${PerformanceLogger.formatDuration(endTime - startTime)}`);
-
             return response.data;
         } catch (error) {
             return this.parseError(error);
